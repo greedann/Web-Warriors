@@ -4,14 +4,26 @@ import java.util.Vector;
 
 import com.web.warriors.game.objects.Player;
 import com.web.warriors.game.objects.Wall;
+import com.web.warriors.gui.server.common.Map;
+
+import javax.swing.*;
 
 public class GameEngine {
     Vector<Player> players;
     Vector<Wall> walls;
+    Map map;
 
     public GameEngine() {
         players = new Vector<Player>();
         walls = new Vector<Wall>();
+        map = new Map(players);
+        JFrame frame = new JFrame("Map with Players");// Another example player
+        frame.add(map);
+        frame.setSize(625, 625);
+        frame.pack();
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
     }
 
     public Vector<Player> getPlayers() {
@@ -42,7 +54,6 @@ public class GameEngine {
     public void handleMessage(String message, int id) {
         // TODO rewrite to json
 
-
         String[] parts = message.split(" ");
         if (parts[0].equals("move")) {
             int x = Integer.parseInt(parts[1]);
@@ -57,6 +68,10 @@ public class GameEngine {
         for (Player p : players) {
             System.out.println(p);
         }
+        map.refresh(players);
+        SwingUtilities.invokeLater(() -> {
+            map.repaint();
+        });
 
     }
 }

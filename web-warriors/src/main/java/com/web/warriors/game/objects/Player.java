@@ -4,18 +4,22 @@ public class Player {
     private String name;
     private int score;
     private int id;
-    private float x;
-    private float y;
+    private int x;
+    private int y;
 
     public Player(String name, int id) {
         this.name = name;
         this.id = id;
         this.score = 0;
+
+
     }
 
-    public void move(float x, float y) {
-        this.x = x;
-        this.y = y;
+    public void move(int x, int y) {
+        if(x > 3 && x < 147)
+            this.x = x;
+        if(y > 3 && y < 147)
+            this.y = y;
     }
 
     public void addScore(int score) {
@@ -34,16 +38,21 @@ public class Player {
         return id;
     }
 
-    public float getX() {
+    public int getX() {
         return x;
     }
 
-    public float getY() {
+    public int getY() {
         return y;
     }
 
     @Override
     public String toString() {
         return "Player [name=" + name + ", score=" + score + ", id=" + id + ", x=" + x + ", y=" + y + "]";
+    }
+
+    public void setPosition(int newX, int newY) {
+        this.x = newX;
+        this.y = newY;
     }
 }

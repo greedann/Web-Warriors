@@ -7,7 +7,7 @@ import java.io.OutputStream;
 import java.util.Scanner;
 
 public class Client implements Runnable {
-    private final int TICKS_PER_SECOND = 1;
+    private final int TICKS_PER_SECOND = 30;
     private final int MILLISECONDS_PER_TICK = 1000 / TICKS_PER_SECOND;
     private static int port = 8080;
     private static String message;
@@ -33,16 +33,31 @@ public class Client implements Runnable {
             Thread thread = new Thread(serverListner);
             thread.start();
             // connection established
-            int x = 0;
-            int y = 0;
+            int x = (int)(Math.random() * 140)+10;
+            int y = (int)(Math.random() * 140)+10;
 
             // send message to server TICKS_PER_SECOND times per second
+
             while (true) {
-                message = "move " + x++ + " " + y++;
+                //rand bool
+                boolean randBool = Math.random() < 0.5;
+                if (randBool) {
+                    x--;
+                } else {
+                    x++;;
+                }
+                randBool = Math.random() < 0.5;
+                if (randBool) {
+                    y--;
+                } else {
+                    y++;
+                }
+                message = "move " + x + " " + y;
                 objectOut.writeObject(message);
                 objectOut.flush();
-                x = x % 10;
-                y = y % 10;
+
+                x = x % 150;
+                y = y % 150;
                 Thread.sleep(MILLISECONDS_PER_TICK);
             }
 
