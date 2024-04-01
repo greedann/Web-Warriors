@@ -1,4 +1,4 @@
-package com.web.warriors.server;
+package com.web.warriors.web.server;
 
 import java.io.ObjectInputStream;
 

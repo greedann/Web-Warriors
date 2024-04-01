@@ -1,4 +1,4 @@
-package com.web.warriors.server;
+package com.web.warriors.web.server;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -8,13 +8,15 @@ import java.net.Socket;
 public class ConnectionHandler implements Runnable {
     private final Socket ClientSocket;
     private final Server server;
+    private final int id;
     private ObjectOutputStream outputStream;
     private ObjectInputStream inputStream;
     private ClientListner clientListner;
 
-    public ConnectionHandler(final Socket ClientSocket, final Server server) {
+    public ConnectionHandler(final Socket ClientSocket, final Server server, final int id) {
         this.ClientSocket = ClientSocket;
         this.server = server;
+        this.id = id;
 
         try {
             this.outputStream = new ObjectOutputStream(this.ClientSocket.getOutputStream());
@@ -27,7 +29,7 @@ public class ConnectionHandler implements Runnable {
 
     public void run() {
         try {
-            System.out.println("Connection established");
+            System.out.println("Connection established with client " + id);
 
             Thread thread = new Thread(clientListner);
             thread.start();
