@@ -4,16 +4,19 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Hashtable;
 
-import com.web.warriors.gui.server.ServerMain;
+import com.web.warriors.game.GameEngine;
+import com.web.warriors.gui.server.ServerGUI;
 
 public class Server implements Runnable {
     static int port = 8080;
     private Hashtable<Integer, ConnectionHandler> ConnectionHandlers = new Hashtable<Integer, ConnectionHandler>();
-    private ServerMain serverMain;
+    private ServerGUI serverGUI;
+    private GameEngine gameEngine;
 
-    public Server(ServerMain serverMain) {
-        this.serverMain = serverMain;
+    public Server(GameEngine gameEngine) {
+        this.gameEngine = gameEngine;
     }
+
 
     @Override
     public void run() {
@@ -24,7 +27,7 @@ public class Server implements Runnable {
                 Socket fromClientSocket = serverSocket.accept();
                 ConnectionHandler handler = new ConnectionHandler(fromClientSocket, this, clientCount);
                 ConnectionHandlers.put(clientCount, handler);
-                serverMain.addClient(clientCount);
+                addClient(clientCount);
                 System.out.println("Client " + clientCount + " connected");
                 clientCount++;
                 Thread t = new Thread(handler);
@@ -33,6 +36,24 @@ public class Server implements Runnable {
         } catch (Exception e) {
             System.out.println("Error: " + e);
         }
+    }
+
+    public void setServerGUI(ServerGUI serverGUI) {
+        this.serverGUI = serverGUI;
+    }
+
+    public void addClient(int id) {
+        serverGUI.addClient(id);
+        gameEngine.addPlayer(id,"test");
+    }
+
+    public void removeClient(int id) {
+        ConnectionHandlers.remove(id);
+        serverGUI.removeClient(id);
+    }
+
+    public void handleMessage(String message, int id) {
+        gameEngine.handleMessage(message, id);
     }
 
     public void sendToAll(String message) {

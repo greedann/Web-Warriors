@@ -11,10 +11,10 @@ public class ServerClients extends JPanel { // panel that will display the clien
     private JTextField messageField;
     private JButton messageSelectedButton;
     private JButton messageAllButton;
-    private ServerMain serverMain;
+    private ServerGUI serverMain;
 
 
-    public ServerClients(ServerMain serverMain) {
+    public ServerClients(ServerGUI serverMain) {
         super();
         this.serverMain = serverMain;
         clientList = new JComboBox<String>();
@@ -44,6 +44,10 @@ public class ServerClients extends JPanel { // panel that will display the clien
 
     public void addClient(Integer clientID) {
         clientList.addItem("Client " + clientID);
+    }
+
+    public void removeClient(Integer clientID) {
+        clientList.removeItem("Client " + clientID);
     }
 
     public void sendMessageToSelectedClient(String message) {

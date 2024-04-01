@@ -21,7 +21,7 @@ public class ConnectionHandler implements Runnable {
         try {
             this.outputStream = new ObjectOutputStream(this.ClientSocket.getOutputStream());
             this.inputStream = new ObjectInputStream(this.ClientSocket.getInputStream());
-            this.clientListner = new ClientListner(inputStream);
+            this.clientListner = new ClientListner(inputStream, server, id);
         } catch (final IOException e) {
             e.printStackTrace();
         }
