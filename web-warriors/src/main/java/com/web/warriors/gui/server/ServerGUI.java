@@ -2,17 +2,18 @@ package com.web.warriors.gui.server;
 
 import javax.swing.JFrame;
 
+import com.web.warriors.game.GameEngine;
 import com.web.warriors.web.server.Server;
 
-public class ServerMain extends JFrame {
+public class ServerGUI extends JFrame {
     private Server server;
     private ServerClients serverClients;
+    private GameEngine gameEngine;
 
-    public ServerMain() {
+    public ServerGUI(Server server, GameEngine gameEngine) {
         super("Server");
-        server = new Server(this);
-        Thread thread = new Thread(server);
-        thread.start();
+        this.server = server;
+        this.gameEngine = gameEngine;
 
         setTitle("Server");
         setSize(400, 300);
@@ -22,10 +23,16 @@ public class ServerMain extends JFrame {
         serverClients = new ServerClients(this);
         add(serverClients);
 
+        // create new window whitch will display game state
+
     }
 
     public void addClient(Integer clientID) {
         serverClients.addClient(clientID);
+    }
+
+    public void removeClient(Integer clientID) {
+        serverClients.removeClient(clientID);
     }
 
     public void sendToOne(String message, int id) {
@@ -35,10 +42,4 @@ public class ServerMain extends JFrame {
     public void sendToAll(String message) {
         server.sendToAll(message);
     }
-
-    public static void main(String[] args) {
-        new ServerMain();
-    }
-
-   
 }
