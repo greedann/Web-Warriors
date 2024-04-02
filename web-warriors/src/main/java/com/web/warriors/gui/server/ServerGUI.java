@@ -3,14 +3,14 @@ package com.web.warriors.gui.server;
 import javax.swing.JFrame;
 
 import com.web.warriors.game.GameEngine;
-import com.web.warriors.gui.server.common.Map;
+import com.web.warriors.gui.common.Map;
 import com.web.warriors.web.server.Server;
 
 public class ServerGUI extends JFrame {
     private Server server;
     private ServerClients serverClients;
     private GameEngine gameEngine;
-    Map map;
+    private Map map;
 
     public ServerGUI(Server server, GameEngine gameEngine) {
         super("Server");

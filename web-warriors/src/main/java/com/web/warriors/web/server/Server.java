@@ -2,8 +2,11 @@ package com.web.warriors.web.server;
 
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Map;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.web.warriors.game.GameEngine;
 import com.web.warriors.gui.server.ServerGUI;
 
@@ -12,11 +15,11 @@ public class Server implements Runnable {
     private Hashtable<Integer, ConnectionHandler> ConnectionHandlers = new Hashtable<Integer, ConnectionHandler>();
     private ServerGUI serverGUI;
     private GameEngine gameEngine;
+    ObjectMapper mapper = new ObjectMapper();
 
     public Server(GameEngine gameEngine) {
         this.gameEngine = gameEngine;
     }
-
 
     @Override
     public void run() {
@@ -44,7 +47,16 @@ public class Server implements Runnable {
 
     public void addClient(int id) {
         serverGUI.addClient(id);
-        gameEngine.addPlayer(id,"test");
+        gameEngine.addPlayer(id, "test");
+        Map<String, Object> data = new HashMap<>();
+        data.put("type", "set_id");
+        data.put("id", id);
+        try {
+            String json = mapper.writeValueAsString(data);
+            sendToOne(json, id);
+        } catch (Exception e) {
+            System.out.println("Error: " + e);
+        }
     }
 
     public void removeClient(int id) {

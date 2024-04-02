@@ -1,6 +1,5 @@
 package com.web.warriors.game;
 
-import java.io.IOException;
 import java.util.Map;
 import java.util.Vector;
 
@@ -33,6 +32,10 @@ public class GameEngine {
         players.add(player);
     }
 
+    public void addPlayer(Player player) {
+        players.add(player);
+    }
+
     public void removePlayer(Player player) {
         players.remove(player);
     }
@@ -55,10 +58,11 @@ public class GameEngine {
                 case "position":
                     int x = (int) data.get("x");
                     int y = (int) data.get("y");
-                    System.out.println("Player " + id + " moved to " + x + " " + y);
                     for (Player p : players) {
                         if (p.getId() == id) {
+                            System.out.println("Player " + p.getId() + " moved to " + x + " " + y);
                             p.move(x, y);
+                            break;
                         }
                     }
                     break;
@@ -66,27 +70,14 @@ public class GameEngine {
                 default:
                     break;
             }
+
         } catch (JsonMappingException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (JsonProcessingException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
         }
-
-        // String[] parts = message.split(" ");
-        // if (parts[0].equals("move")) {
-        // int x = Integer.parseInt(parts[1]);
-        // int y = Integer.parseInt(parts[2]);
-        // for (Player p : players) {
-        // if (p.getId() == id) {
-        // p.move(x, y);
-        // }
-        // }
-        // }
 
         // for (Player p : players) {
         // System.out.println(p);

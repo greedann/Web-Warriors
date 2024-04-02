@@ -1,4 +1,4 @@
-package com.web.warriors.gui.server.common;
+package com.web.warriors.gui.common;
 
 import com.web.warriors.game.GameEngine;
 import com.web.warriors.game.objects.Player;
