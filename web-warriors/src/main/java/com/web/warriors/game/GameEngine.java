@@ -36,8 +36,15 @@ public class GameEngine {
         players.add(player);
     }
 
-    public void removePlayer(Player player) {
-        players.remove(player);
+    public void removePlayer(Integer id) {
+        System.out.println("Removing player " + id);
+        for (Player p : players) {
+            if (p.getId() == id) {
+                System.out.println("Player " + p.getId() + " disconnected");
+                players.remove(p);
+                break;
+            }
+        }
     }
 
     public void updatePlayer(Player player) {

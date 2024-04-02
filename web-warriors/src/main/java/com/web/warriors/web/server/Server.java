@@ -62,6 +62,7 @@ public class Server implements Runnable {
     public void removeClient(int id) {
         ConnectionHandlers.remove(id);
         serverGUI.removeClient(id);
+        gameEngine.removePlayer(id);
     }
 
     public void handleMessage(String message, int id) {
