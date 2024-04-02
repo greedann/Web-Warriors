@@ -35,7 +35,6 @@ public class Map extends JPanel {
     }
 
     public void refresh() {
-        this.players = gameEngine.getPlayers();
         SwingUtilities.invokeLater(() -> {
             this.repaint();
         });

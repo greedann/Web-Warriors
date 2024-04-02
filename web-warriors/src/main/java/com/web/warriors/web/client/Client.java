@@ -4,13 +4,16 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class Client implements Runnable {
-    private final int TICKS_PER_SECOND = 30;
+    private final int TICKS_PER_SECOND = 15;
     private final int MILLISECONDS_PER_TICK = 1000 / TICKS_PER_SECOND;
     private static int port = 8080;
-    private static String message;
+    private String json;
 
     public static void main(String[] args) {
         Client client = new Client();
@@ -33,18 +36,21 @@ public class Client implements Runnable {
             Thread thread = new Thread(serverListner);
             thread.start();
             // connection established
-            int x = (int)(Math.random() * 140)+10;
-            int y = (int)(Math.random() * 140)+10;
 
             // send message to server TICKS_PER_SECOND times per second
+            ObjectMapper mapper = new ObjectMapper();
+
+            int x = (int) (Math.random() * 140) + 10;
+            int y = (int) (Math.random() * 140) + 10;
 
             while (true) {
-                //rand bool
+                // rand bool
                 boolean randBool = Math.random() < 0.5;
                 if (randBool) {
                     x--;
                 } else {
-                    x++;;
+                    x++;
+                    ;
                 }
                 randBool = Math.random() < 0.5;
                 if (randBool) {
@@ -52,8 +58,13 @@ public class Client implements Runnable {
                 } else {
                     y++;
                 }
-                message = "move " + x + " " + y;
-                objectOut.writeObject(message);
+
+                Map<String, Object> data = new HashMap<>();
+                data.put("type", "position");
+                data.put("x", x);
+                data.put("y", y);
+                json = mapper.writeValueAsString(data);
+                objectOut.writeObject(json);
                 objectOut.flush();
 
                 x = x % 150;
