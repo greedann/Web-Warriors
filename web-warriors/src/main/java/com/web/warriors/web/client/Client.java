@@ -34,7 +34,8 @@ public class Client implements Runnable {
     ObjectInputStream objectIn;
 
     public Client(GameEngine gameEngine, ClientAplication clientAplication) {
-        gameEngine = new GameEngine();
+       // gameEngine = new GameEngine();
+        this.gameEngine = gameEngine;
         this.clientAplication = clientAplication;
     }
 
@@ -66,17 +67,17 @@ public class Client implements Runnable {
             int x = (int) (Math.random() * 140) + 10;
             int y = (int) (Math.random() * 140) + 10;
 
-            while (true) {
-                // rand bool
-                x = x + 1;
-                y = y + 2;
-
-                x = x % 150;
-                y = y % 150;
-
-                clientAplication.updatePlayerPos(x, y);
-                Thread.sleep(MILLISECONDS_PER_TICK);
-            }
+//            while (true) {
+//                // rand bool
+//                x = x + 1;
+//                y = y + 2;
+//
+//                x = x % 150;
+//                y = y % 150;
+//
+//                clientAplication.updatePlayerPos(x, y);
+//                Thread.sleep(MILLISECONDS_PER_TICK);
+//            }
 
             // socket.close();
 
@@ -108,5 +109,9 @@ public class Client implements Runnable {
 
     public void setClientGui(ClientGui clientGui) {
         this.clientGui = clientGui;
+    }
+
+    public ClientGui getClientGui() {
+        return clientGui;
     }
 }

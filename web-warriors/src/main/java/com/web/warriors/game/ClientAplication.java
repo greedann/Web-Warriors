@@ -27,6 +27,10 @@ public class ClientAplication implements Runnable {
         client.setClientGui(clientGui);
         Thread clientThread = new Thread(client);
         clientThread.start();
+        //client.getClientGui().setPlayer(gameEngine.getPlayer(client.getId()));
+
+        //myPlayer = gameEngine.getPlayer(client.getId());
+        //System.out.println("Client started"+client.getId());
 
     }
 

@@ -26,7 +26,7 @@ public class ServerGUI extends JFrame {
         add(serverClients);
 
         // create new window whitch will display game state
-        JFrame frame = new JFrame("Map with Players");// Another example player
+        JFrame frame = new JFrame("Server");// Another example player
         map = new Map(gameEngine);
 
         frame.add(map);

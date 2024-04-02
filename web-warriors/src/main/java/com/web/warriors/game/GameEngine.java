@@ -18,7 +18,14 @@ public class GameEngine {
         players = new Vector<Player>();
         walls = new Vector<Wall>();
     }
-
+    public Player getPlayer(int id) {
+        for (Player p : players) {
+            if (p.getId() == id) {
+                return p;
+            }
+        }
+        return null;
+    }
     public Vector<Player> getPlayers() {
         return players;
     }
