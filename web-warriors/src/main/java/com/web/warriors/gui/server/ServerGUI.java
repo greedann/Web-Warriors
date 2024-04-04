@@ -3,19 +3,17 @@ package com.web.warriors.gui.server;
 import javax.swing.JFrame;
 
 import com.web.warriors.game.GameEngine;
+import com.web.warriors.game.ServerAplication;
 import com.web.warriors.gui.common.Map;
 import com.web.warriors.web.server.Server;
 
 public class ServerGUI extends JFrame {
-    private Server server;
+    private ServerAplication aplication;
     private ServerClients serverClients;
-    private GameEngine gameEngine;
     private Map map;
 
     public ServerGUI(Server server, GameEngine gameEngine) {
         super("Server");
-        this.server = server;
-        this.gameEngine = gameEngine;
 
         setTitle("Server");
         setSize(400, 300);
@@ -35,6 +33,7 @@ public class ServerGUI extends JFrame {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
+        frame.repaint();
 
     }
 
@@ -47,10 +46,10 @@ public class ServerGUI extends JFrame {
     }
 
     public void sendToOne(String message, int id) {
-        server.sendToOne(message, id);
+        aplication.sendToOne(message, id);
     }
 
     public void sendToAll(String message) {
-        server.sendToAll(message);
+        aplication.sendToAll(message);
     }
 }

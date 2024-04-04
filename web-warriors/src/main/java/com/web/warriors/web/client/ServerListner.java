@@ -6,7 +6,6 @@ import java.util.Map;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.web.warriors.game.objects.Player;
 
 public class ServerListner implements Runnable {
     ObjectInputStream objectIn;
@@ -21,7 +20,7 @@ public class ServerListner implements Runnable {
     public void run() {
         try {
             while (true) {
-                String message = objectIn.readObject().toString();
+                String message = objectIn.readObject().toString(); // TODO: fix crash here on close
                 System.out.println("Server sent: " + message);
 
                 try {
@@ -45,6 +44,15 @@ public class ServerListner implements Runnable {
                     e.printStackTrace();
                 }
             }
+        } catch (Exception e) {
+            System.out.println("Error: " + e);
+        }
+    }
+
+    public void stop() {
+        try {
+            objectIn.close();
+            Thread.currentThread().interrupt();
         } catch (Exception e) {
             System.out.println("Error: " + e);
         }

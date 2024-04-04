@@ -1,6 +1,5 @@
 package com.web.warriors.gui.server;
 
-
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
@@ -13,7 +12,6 @@ public class ServerClients extends JPanel { // panel that will display the clien
     private JButton messageAllButton;
     private ServerGUI serverMain;
 
-
     public ServerClients(ServerGUI serverMain) {
         super();
         this.serverMain = serverMain;
@@ -25,7 +23,7 @@ public class ServerClients extends JPanel { // panel that will display the clien
 
         messageField = new JTextField();
         add(messageField);
-        
+
         messageSelectedButton = new JButton("Send Message to selected client");
         add(messageSelectedButton);
 
@@ -39,7 +37,7 @@ public class ServerClients extends JPanel { // panel that will display the clien
         messageAllButton.addActionListener(e -> {
             sendMessageToAllClients(messageField.getText());
         });
-        
+
     }
 
     public void addClient(Integer clientID) {

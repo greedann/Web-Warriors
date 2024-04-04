@@ -3,8 +3,6 @@ package com.web.warriors.game;
 import java.util.Map;
 import java.util.Vector;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.web.warriors.game.objects.Player;
 import com.web.warriors.game.objects.Wall;
@@ -18,6 +16,7 @@ public class GameEngine {
         players = new Vector<Player>();
         walls = new Vector<Wall>();
     }
+
     public Player getPlayer(int id) {
         for (Player p : players) {
             if (p.getId() == id) {
@@ -26,6 +25,7 @@ public class GameEngine {
         }
         return null;
     }
+
     public Vector<Player> getPlayers() {
         return players;
     }
@@ -62,39 +62,26 @@ public class GameEngine {
         }
     }
 
-    public void handleMessage(String message, int id) {
-        // TODO rewrite to json
-
-        try {
-            Map<String, Object> data = mapper.readValue(message, Map.class);
-            String type = (String) data.get("type");
-            switch (type) {
-                case "position":
-                    int x = (int) data.get("x");
-                    int y = (int) data.get("y");
-                    for (Player p : players) {
-                        if (p.getId() == id) {
-                            System.out.println("Player " + p.getId() + " moved to " + x + " " + y);
-                            p.move(x, y);
-                            break;
-                        }
+    public void handleMessage(Map<String, Object> data, int id) {
+        String type = (String) data.get("type");
+        switch (type) {
+            case "position":
+                int x = (int) data.get("x");
+                int y = (int) data.get("y");
+                for (Player p : players) {
+                    if (p.getId() == id) {
+                        p.move(x, y);
+                        break;
                     }
-                    break;
+                }
+                break;
 
-                default:
-                    break;
-            }
+            case "disconnect":
+                removePlayer(id);
+                break;
 
-        } catch (JsonMappingException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (JsonProcessingException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            default:
+                break;
         }
-
-        // for (Player p : players) {
-        // System.out.println(p);
-        // }
     }
 }

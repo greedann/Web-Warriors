@@ -13,7 +13,7 @@ public class ConnectionHandler implements Runnable {
     private ObjectInputStream inputStream;
     private ClientListner clientListner;
 
-    public ConnectionHandler(final Socket ClientSocket, final Server server, final int id) {
+    public ConnectionHandler(Socket ClientSocket, Server server, int id) {
         this.ClientSocket = ClientSocket;
         this.server = server;
         this.id = id;
@@ -42,6 +42,15 @@ public class ConnectionHandler implements Runnable {
     public void send(String message) {
         try {
             outputStream.writeObject(message);
+        } catch (final IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void close() {
+        try {
+            ClientSocket.close();
+            Thread.currentThread().interrupt();
         } catch (final IOException e) {
             e.printStackTrace();
         }

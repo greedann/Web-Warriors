@@ -2,23 +2,20 @@ package com.web.warriors.web.server;
 
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.web.warriors.game.GameEngine;
-import com.web.warriors.gui.server.ServerGUI;
+import com.web.warriors.game.ServerAplication;
 
 public class Server implements Runnable {
     static int port = 8080;
     private Hashtable<Integer, ConnectionHandler> ConnectionHandlers = new Hashtable<Integer, ConnectionHandler>();
-    private ServerGUI serverGUI;
-    private GameEngine gameEngine;
+    private ServerAplication aplication;
     ObjectMapper mapper = new ObjectMapper();
 
-    public Server(GameEngine gameEngine) {
-        this.gameEngine = gameEngine;
+    public Server(ServerAplication aplication) {
+        this.aplication = aplication;
     }
 
     @Override
@@ -41,32 +38,18 @@ public class Server implements Runnable {
         }
     }
 
-    public void setServerGUI(ServerGUI serverGUI) {
-        this.serverGUI = serverGUI;
-    }
-
     public void addClient(int id) {
-        serverGUI.addClient(id);
-        gameEngine.addPlayer(id, "test");
-        Map<String, Object> data = new HashMap<>();
-        data.put("type", "set_id");
-        data.put("id", id);
-        try {
-            String json = mapper.writeValueAsString(data);
-            sendToOne(json, id);
-        } catch (Exception e) {
-            System.out.println("Error: " + e);
-        }
+        aplication.addClient(id);
     }
 
     public void removeClient(int id) {
+        ConnectionHandlers.get(id).close();
         ConnectionHandlers.remove(id);
-        serverGUI.removeClient(id);
-        gameEngine.removePlayer(id);
+        aplication.removeClient(id);
     }
 
-    public void handleMessage(String message, int id) {
-        gameEngine.handleMessage(message, id);
+    public void handleMessage(Map<String, Object> data, int id) {
+        aplication.handleMessage(data, id);
     }
 
     public void sendToAll(String message) {

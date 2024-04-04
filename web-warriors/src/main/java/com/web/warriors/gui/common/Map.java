@@ -13,7 +13,6 @@ public class Map extends JPanel {
     private final int MILLISECONDS_PER_TICK = 1000 / TICKS_PER_SECOND;
     private final int cellSize = 25; // Size of each cell in pixels
     private final int mapSize = 25; // Size of the map (10x10)
-    private GameEngine gameEngine;
     private Vector<Player> players = new Vector<>();
 
     public Map(GameEngine gameEngine) {
@@ -21,7 +20,6 @@ public class Map extends JPanel {
         setBackground(Color.WHITE);
         setFocusable(true);
         this.players = gameEngine.getPlayers();
-        this.gameEngine = gameEngine;
         // addKeyListener(this);
 
         // call refresh every MILLISECONDS_PER_TICK milliseconds
@@ -52,35 +50,6 @@ public class Map extends JPanel {
             g.fillOval(centerX - radius, centerY - radius, cellSize, cellSize);
         }
     }
-
-    // @Override
-    // public void keyPressed(KeyEvent e) {
-    // int key = e.getKeyCode();
-    // // Move players based on arrow keys
-    // for (Player player : players) {
-    // int newX = player.getX();
-    // int newY = player.getY();
-    // if (key == KeyEvent.VK_LEFT && newX > 0) {
-    // newX--;
-    // } else if (key == KeyEvent.VK_RIGHT && newX < mapSize - 1) {
-    // newX++;
-    // } else if (key == KeyEvent.VK_UP && newY > 0) {
-    // newY--;
-    // } else if (key == KeyEvent.VK_DOWN && newY < mapSize - 1) {
-    // newY++;
-    // }
-    // player.setPosition(newX, newY);
-    // }
-    // repaint();
-    // }
-    //
-    // @Override
-    // public void keyTyped(KeyEvent e) {
-    // }
-    //
-    // @Override
-    // public void keyReleased(KeyEvent e) {
-    // }
 
     public void addPlayer(Player player) {
         players.add(player);

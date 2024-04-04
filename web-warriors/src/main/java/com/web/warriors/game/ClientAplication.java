@@ -9,29 +9,21 @@ import com.web.warriors.game.objects.Player;
 import com.web.warriors.gui.client.ClientGui;
 import com.web.warriors.web.client.Client;
 
-public class ClientAplication implements Runnable {
+public class ClientAplication {
     GameEngine gameEngine;
     Client client;
     ClientGui clientGui;
-    Player myPlayer;
+    Player myPlayer = null;
     ObjectMapper mapper = new ObjectMapper();
 
     public ClientAplication() {
         gameEngine = new GameEngine();
+        client = new Client(this);
+        clientGui = new ClientGui(this, gameEngine);
     }
 
-    @Override
-    public void run() {
-        client = new Client(gameEngine, this);
-        clientGui = new ClientGui(client, gameEngine);
-        client.setClientGui(clientGui);
-        Thread clientThread = new Thread(client);
-        clientThread.start();
-        //client.getClientGui().setPlayer(gameEngine.getPlayer(client.getId()));
-
-        //myPlayer = gameEngine.getPlayer(client.getId());
-        //System.out.println("Client started"+client.getId());
-
+    public void start() {
+        client.run();
     }
 
     public void setPlayer(Player player) {
@@ -43,7 +35,7 @@ public class ClientAplication implements Runnable {
         if (myPlayer == null) {
             return;
         }
-        myPlayer.setPosition(x, y);
+        myPlayer.move(x, y);
     }
 
     public String getPlayerPosJson() {
@@ -55,7 +47,6 @@ public class ClientAplication implements Runnable {
         data.put("x", myPlayer.getX());
         data.put("y", myPlayer.getY());
         try {
-            System.out.println(mapper.writeValueAsString(data));
             return mapper.writeValueAsString(data);
         } catch (JsonProcessingException e) {
             // TODO Auto-generated catch block
@@ -64,9 +55,30 @@ public class ClientAplication implements Runnable {
         return null;
     }
 
+    public Player getPlayer() {
+        return myPlayer;
+    }
+
+    public void setId(int id) {
+        if (myPlayer == null) {
+            setPlayer(new Player("Me", id));
+        } else {
+            myPlayer.setId(id);
+        }
+        clientGui.setPlayer(myPlayer);
+    }
+
+    public int getId() {
+        return myPlayer.getId();
+    }
+
+    public void exit() {
+        client.disconnect();
+        System.exit(0);
+    }
+
     public static void main(String[] args) {
         ClientAplication clientAplication = new ClientAplication();
-        Thread clientThread = new Thread(clientAplication);
-        clientThread.start();
+        clientAplication.start();
     }
 }

@@ -11,14 +11,14 @@ public class Player {
         this.name = name;
         this.id = id;
         this.score = 0;
-
-
+        this.x = 75;
+        this.y = 75;
     }
 
     public void move(int x, int y) {
-        if(x > 3 && x < 147)
+        if (x > 3 && x < 147)
             this.x = x;
-        if(y > 3 && y < 147)
+        if (y > 3 && y < 147)
             this.y = y;
     }
 
@@ -46,13 +46,12 @@ public class Player {
         return y;
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
+
     @Override
     public String toString() {
         return "Player [name=" + name + ", score=" + score + ", id=" + id + ", x=" + x + ", y=" + y + "]";
-    }
-
-    public void setPosition(int newX, int newY) {
-        this.x = newX;
-        this.y = newY;
     }
 }
