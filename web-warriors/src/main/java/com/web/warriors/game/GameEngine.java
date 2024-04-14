@@ -33,7 +33,13 @@ public class GameEngine {
     public void addWall(Wall wall) {
         walls.add(wall);
     }
+    public void setWalls(Vector<Wall> walls) {
+        this.walls = walls;
+    }
 
+    public Vector<Wall> getWalls() {
+        return walls;
+    }
     public void addPlayer(int id, String name) {
         Player player = new Player(name, id);
         players.add(player);
