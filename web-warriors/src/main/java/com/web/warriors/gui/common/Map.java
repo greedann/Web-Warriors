@@ -67,10 +67,10 @@ public class Map extends JPanel {
 
             Graphics2D g2d = (Graphics2D) g;
             g2d.setColor(Color.BLACK);
-            // Устанавливаем толщину линии
+            // set width of linr
             g2d.setStroke(new BasicStroke(5));
 
-            // Рисуем прямую линию
+            // draw straight line
             g2d.drawLine(wall.getStart_x()* cellSize / 6 , wall.getStart_y()* cellSize / 6 , wall.getEnd_x()* cellSize / 6 , wall.getEnd_y()* cellSize / 6 );
         }
     }
