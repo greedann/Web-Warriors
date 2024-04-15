@@ -2,8 +2,11 @@ package com.web.warriors.game;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Vector;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.web.warriors.game.objects.Player;
+import com.web.warriors.game.objects.Team;
 import com.web.warriors.gui.server.ServerGUI;
 import com.web.warriors.web.server.Server;
 
@@ -47,10 +50,12 @@ public class ServerAplication implements Runnable {
 
     public void addClient(int id) {
         serverGUI.addClient(id);
-        gameEngine.addPlayer(id, "test");
+        Team team = gameEngine.autoSelectTeam();
+        gameEngine.addPlayer(id, "test", team);
         Map<String, Object> data = new HashMap<>();
         data.put("type", "set_id");
         data.put("id", id);
+        data.put("team", team);
         sendToOne(data, id);
     }
 
@@ -69,8 +74,28 @@ public class ServerAplication implements Runnable {
         return null;
     }
 
+    public String dataToJson(Vector<Player> data) {
+        try {
+            String json = mapper.writeValueAsString(data);
+            return json;
+        } catch (Exception e) {
+            System.out.println("Error: " + e);
+        }
+        return null;
+    }
+
     public void handleMessage(Map<String, Object> data, int id) {
         gameEngine.handleMessage(data, id);
+    }
+
+    public void sendUpdates() {
+        for (Player player : gameEngine.getPlayers()) {
+            Map<String, Object> data = new HashMap<>();
+            String json = dataToJson(gameEngine.getUpdates(player.getId()));
+            data.put("type", "updates");
+            data.put("players", json);
+            sendToOne(data, player.getId());
+        }
     }
 
     public static void main(String[] args) {

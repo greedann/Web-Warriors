@@ -8,9 +8,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.List;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.web.warriors.game.ClientAplication;
+import com.web.warriors.game.objects.Player;
+import com.web.warriors.game.objects.Team;
 
 public class Client implements Runnable {
     private final int TICKS_PER_SECOND = 30;
@@ -88,6 +91,14 @@ public class Client implements Runnable {
 
     public int getId() {
         return clientAplication.getPlayer().getId();
+    }
+
+    public void setTeam(Team team) {
+        clientAplication.setTeam(team);
+    }
+
+    public void updatePlayers(List<Player> players) {
+        clientAplication.updatePlayers(players);
     }
 
     public void disconnect() {

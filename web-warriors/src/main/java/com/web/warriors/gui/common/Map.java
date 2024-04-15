@@ -47,7 +47,16 @@ public class Map extends JPanel {
         super.paintComponent(g);
 
         for (Player player : players) {
-            g.setColor(Color.RED);
+            switch (player.getTeam()) {
+                case CounterTerrorists:
+                    g.setColor(Color.BLUE);
+                    break;
+                case Terrorists:
+                    g.setColor(Color.RED);
+                    break;
+                default:
+                    g.setColor(Color.GREEN);
+            }
             int radius = cellSize / 2; // Радиус круга
             int centerX = player.getX() * cellSize / 6 + radius; // Центр круга по оси X
             int centerY = player.getY() * cellSize / 6 + radius; // Центр круга по оси Y
@@ -63,7 +72,6 @@ public class Map extends JPanel {
 
             // Рисуем прямую линию
             g2d.drawLine(wall.getStart_x()* cellSize / 6 , wall.getStart_y()* cellSize / 6 , wall.getEnd_x()* cellSize / 6 , wall.getEnd_y()* cellSize / 6 );
-            System.out.println("Drawing wall");
         }
     }
 

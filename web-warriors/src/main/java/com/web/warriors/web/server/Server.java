@@ -4,15 +4,20 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Hashtable;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.web.warriors.game.ServerAplication;
 
 public class Server implements Runnable {
+    private final int TICKS_PER_SECOND = 30;
+    private final int MILLISECONDS_PER_TICK = 1000 / TICKS_PER_SECOND;
     static int port = 8080;
     private Hashtable<Integer, ConnectionHandler> ConnectionHandlers = new Hashtable<Integer, ConnectionHandler>();
     private ServerAplication aplication;
     ObjectMapper mapper = new ObjectMapper();
+    Timer playersSender = new Timer();
 
     public Server(ServerAplication aplication) {
         this.aplication = aplication;
@@ -22,6 +27,12 @@ public class Server implements Runnable {
     public void run() {
         try (ServerSocket serverSocket = new ServerSocket(port);) {
             int clientCount = 0;
+            playersSender.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    aplication.sendUpdates();
+                }
+            }, 0, MILLISECONDS_PER_TICK);
             while (true) {
                 System.out.println("Waiting for client on port " + serverSocket.getLocalPort() + "...");
                 Socket fromClientSocket = serverSocket.accept();

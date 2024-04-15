@@ -2,10 +2,12 @@ package com.web.warriors.game;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.web.warriors.game.objects.Player;
+import com.web.warriors.game.objects.Team;
 import com.web.warriors.gui.client.ClientGui;
 import com.web.warriors.web.client.Client;
 
@@ -75,6 +77,14 @@ public class ClientAplication {
     public void exit() {
         client.disconnect();
         System.exit(0);
+    }
+
+    public void setTeam(Team team) {
+        myPlayer.setTeam(team);
+    }
+
+    public void updatePlayers(List<Player> players) {
+        gameEngine.updatePlayers(players);
     }
 
     public static void main(String[] args) {

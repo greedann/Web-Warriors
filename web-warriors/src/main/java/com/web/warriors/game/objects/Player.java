@@ -1,11 +1,23 @@
 package com.web.warriors.game.objects;
 
-public class Player {
+import java.io.Serializable;
+
+public class Player implements Serializable {
     private String name;
     private int score;
     private int id;
     private int x;
     private int y;
+    private Team team;
+
+    public Player() {
+        this.name = "";
+        this.id = 0;
+        this.score = 0;
+        this.x = 75;
+        this.y = 75;
+        this.team = Team.NONE;
+    }
 
     public Player(String name, int id) {
         this.name = name;
@@ -13,7 +25,18 @@ public class Player {
         this.score = 0;
         this.x = 75;
         this.y = 75;
+        this.team = Team.NONE;
     }
+
+    public Player(String name, int id, Team team) {
+        this.name = name;
+        this.id = id;
+        this.score = 0;
+        this.x = 75;
+        this.y = 75;
+        this.team = team;
+    }
+
 
     public void move(int x, int y) {
         if (x > 3 && x < 147)
@@ -48,6 +71,14 @@ public class Player {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public Team getTeam() {
+        return team;
+    }
+
+    public void setTeam(Team team) {
+        this.team = team;
     }
 
     @Override
