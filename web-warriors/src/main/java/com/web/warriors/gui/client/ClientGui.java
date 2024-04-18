@@ -24,8 +24,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class ClientGui {
-    private final int FPS  = 10;
-    private final int MILLISECONDS_PER_TICK = 1000 / FPS;
+    private final int MOVES_PER_SECONDS = 10;
+    private final int MILLISECONDS_PER_TICK = 1000 / MOVES_PER_SECONDS;
     private ClientAplication clientAplication;
     private Map map;
     private Player player = null;
@@ -37,7 +37,6 @@ public class ClientGui {
     private boolean isMovingDown = false;
     Vector<Vector<Integer>> PointsNeighbors;
     Vector<Point> points;
-
 
     private Integer AimPoint;
     private Timer autoMoveTimer;
@@ -63,48 +62,48 @@ public class ClientGui {
             }
         }, 0, MILLISECONDS_PER_TICK);
 
-        //real player
-//        frame.addKeyListener(new KeyListener() {
-//            @Override
-//            public void keyPressed(KeyEvent e) {
-//                int key = e.getKeyCode();
-//                if (key == KeyEvent.VK_A) {
-//                    isMovingLeft = true;
-//                }
-//                if (key == KeyEvent.VK_D) {
-//                    isMovingRight = true;
-//                }
-//                if (key == KeyEvent.VK_W) {
-//                    isMovingUp = true;
-//                }
-//                if (key == KeyEvent.VK_S) {
-//                    isMovingDown = true;
-//                }
-//                movePlayer();
-//            }
-//
-//            @Override
-//            public void keyReleased(KeyEvent e) {
-//                int key = e.getKeyCode();
-//                if (key == KeyEvent.VK_A) {
-//                    isMovingLeft = false;
-//                }
-//                if (key == KeyEvent.VK_D) {
-//                    isMovingRight = false;
-//                }
-//                if (key == KeyEvent.VK_W) {
-//                    isMovingUp = false;
-//                }
-//                if (key == KeyEvent.VK_S) {
-//                    isMovingDown = false;
-//                }
-//                movePlayer();
-//            }
-//
-//            @Override
-//            public void keyTyped(KeyEvent e) {
-//            }
-//        });
+        // real player
+        // frame.addKeyListener(new KeyListener() {
+        // @Override
+        // public void keyPressed(KeyEvent e) {
+        // int key = e.getKeyCode();
+        // if (key == KeyEvent.VK_A) {
+        // isMovingLeft = true;
+        // }
+        // if (key == KeyEvent.VK_D) {
+        // isMovingRight = true;
+        // }
+        // if (key == KeyEvent.VK_W) {
+        // isMovingUp = true;
+        // }
+        // if (key == KeyEvent.VK_S) {
+        // isMovingDown = true;
+        // }
+        // movePlayer();
+        // }
+        //
+        // @Override
+        // public void keyReleased(KeyEvent e) {
+        // int key = e.getKeyCode();
+        // if (key == KeyEvent.VK_A) {
+        // isMovingLeft = false;
+        // }
+        // if (key == KeyEvent.VK_D) {
+        // isMovingRight = false;
+        // }
+        // if (key == KeyEvent.VK_W) {
+        // isMovingUp = false;
+        // }
+        // if (key == KeyEvent.VK_S) {
+        // isMovingDown = false;
+        // }
+        // movePlayer();
+        // }
+        //
+        // @Override
+        // public void keyTyped(KeyEvent e) {
+        // }
+        // });
 
         frame.addWindowListener(new WindowAdapter() {
             @Override
@@ -115,39 +114,31 @@ public class ClientGui {
         });
     }
 
-    private void autoMovePlayer(){
-        if(player == null){
-            player = clientAplication.getPlayer()
-                    ;
+    private void autoMovePlayer() {
+        if (player == null) {
+            // player = clientAplication.getPlayer();
             return;
-
-
-
         }
         Random random = new Random();
         Point currentPoint = new Point(player.getX(), player.getY());
 
-        if(currentPoint.equals(points.get(AimPoint))){
+        if (currentPoint.equals(points.get(AimPoint))) {
             int temp = random.nextInt(PointsNeighbors.get(AimPoint).size());
             AimPoint = PointsNeighbors.get(AimPoint).get(temp);
         }
         int deltaX = 0, deltaY = 0;
 
-        if(points.get(AimPoint).x > currentPoint.x){
-           deltaX = 1;}
-        if(points.get(AimPoint).x < currentPoint.x){
-            deltaX = -1;}
-        if(points.get(AimPoint).y > currentPoint.y){
-            deltaY = 1;}
-        if(points.get(AimPoint).y < currentPoint.y) {
-            deltaY = -1;
-        }
+        deltaX = points.get(AimPoint).x - currentPoint.x;
+        deltaY = points.get(AimPoint).y - currentPoint.y;
+        deltaX = deltaX == 0 ? 0 : deltaX / Math.abs(deltaX);
+        deltaY = deltaY == 0 ? 0 : deltaY / Math.abs(deltaY);
+
         player.move(player.getX() + deltaX, player.getY() + deltaY);
     }
+
     private void movePlayer() {
         if (player == null) {
             player = clientAplication.getPlayer();
-
         }
         int deltaX = 0;
         int deltaY = 0;
@@ -166,10 +157,11 @@ public class ClientGui {
         }
         player.move(player.getX() + deltaX, player.getY() + deltaY);
     }
-    private void setPoints(){
-        String currentDirectory = System.getProperty("user.dir") +"/web-warriors/src/main/resources";
+
+    private void setPoints() {
+        String currentDirectory = System.getProperty("user.dir") + "/web-warriors/src/main/resources";
         Vector<Vector<Integer>> PointsNeighbors = new Vector<>();
-        try (BufferedReader reader = new BufferedReader(new FileReader(currentDirectory+"/PointsNeighbors.txt"))){
+        try (BufferedReader reader = new BufferedReader(new FileReader(currentDirectory + "/PointsNeighbors.txt"))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 List<Integer> neighbors = Stream.of(line.split(","))
@@ -182,7 +174,7 @@ public class ClientGui {
         }
         this.PointsNeighbors = PointsNeighbors;
         points = new Vector<>();
-        try (BufferedReader reader = new BufferedReader(new FileReader(currentDirectory+"/Points.txt"))){
+        try (BufferedReader reader = new BufferedReader(new FileReader(currentDirectory + "/Points.txt"))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(",");
@@ -195,10 +187,11 @@ public class ClientGui {
         }
 
     }
+
     private Vector<Wall> createMapWalls() {
         Vector<Wall> walls = new Vector<>();
-        String currentDirectory = System.getProperty("user.dir") +"/web-warriors/src/main/resources";
-        try (BufferedReader reader = new BufferedReader(new FileReader(currentDirectory+"/walls.txt"))){
+        String currentDirectory = System.getProperty("user.dir") + "/web-warriors/src/main/resources";
+        try (BufferedReader reader = new BufferedReader(new FileReader(currentDirectory + "/walls.txt"))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(",");
@@ -213,12 +206,11 @@ public class ClientGui {
         }
         return walls;
     }
+
     public void setPlayer(Player player) {
         this.player = player;
-
-        int randPoint = new Random().nextInt(15)+1;
+        int randPoint = new Random().nextInt(15) + 1;
         AimPoint = randPoint;
         player.move(points.get(randPoint).x, points.get(randPoint).y);
-
     }
 }
