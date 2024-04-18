@@ -62,7 +62,7 @@ public class Client implements Runnable {
     }
 
     public void sendToServer(String message) {
-        System.out.println(message);
+        // System.out.println(message);
         if (message == null) {
             return;
         }
@@ -77,7 +77,7 @@ public class Client implements Runnable {
     public void sendToServer(Map<String, Object> data) {
         try {
             String msg = mapper.writeValueAsString(data);
-            System.out.println(msg);
+            // System.out.println(msg);
             objectOut.writeObject(msg);
             objectOut.flush();
         } catch (Exception e) {

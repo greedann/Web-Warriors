@@ -11,6 +11,15 @@ public class Player implements Serializable {
     private Team team;
     private double angle;
 
+    public Player(Player other) {
+        name = other.name;
+        score = other.score;
+        id = other.id;
+        x = other.x;
+        y = other.y;
+        team = other.team;
+    }
+
     public Player() {
         this.name = "";
         this.id = 0;

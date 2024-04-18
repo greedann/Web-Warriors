@@ -25,7 +25,7 @@ public class ServerListner implements Runnable {
         try {
             while (true) {
                 String message = objectIn.readObject().toString(); // TODO: fix crash here on close
-                System.out.println("Server sent: " + message);
+                // System.out.println("Server sent: " + message);
 
                 try {
                     Map<String, Object> data = mapper.readValue(message, Map.class);
@@ -47,9 +47,7 @@ public class ServerListner implements Runnable {
                             client.setTeam(team);
                             break;
                         case "updates":
-                            System.out.println((String)data.get("players"));
                             List<Player> players = mapper.readValue((String)data.get("players"), new TypeReference<List<Player>>() {});
-                            //System.out.println(players);
                             client.updatePlayers(players);
                             break;
                         default:

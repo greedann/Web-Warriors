@@ -79,8 +79,8 @@ public class GameEngine {
                 continue;
             if (!isWallBetween(pl.getX(), pl.getY(), players.get(id).getX(), players.get(id).getY()))
                 players_to_send.add(pl);
-            else{
-                Player pl_copy = pl;
+            else {
+                Player pl_copy = new Player(pl);
                 pl_copy.hide();
                 players_to_send.add(pl_copy);
             }
