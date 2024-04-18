@@ -3,6 +3,7 @@ package com.web.warriors.game;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
+import java.util.Vector;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -18,11 +19,13 @@ public class ClientAplication {
     Player myPlayer = null;
     ObjectMapper mapper = new ObjectMapper();
 
+
     public ClientAplication() {
         gameEngine = new GameEngine();
         client = new Client(this);
         clientGui = new ClientGui(this, gameEngine);
     }
+
 
     public void start() {
         client.run();
