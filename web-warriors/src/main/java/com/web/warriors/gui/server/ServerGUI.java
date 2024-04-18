@@ -4,14 +4,8 @@ import javax.swing.JFrame;
 
 import com.web.warriors.game.GameEngine;
 import com.web.warriors.game.ServerAplication;
-import com.web.warriors.game.objects.Wall;
 import com.web.warriors.gui.common.Map;
 import com.web.warriors.web.server.Server;
-
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.Vector;
 
 public class ServerGUI extends JFrame {
     private ServerAplication aplication;
@@ -31,9 +25,7 @@ public class ServerGUI extends JFrame {
 
         // create new window whitch will display game state
         JFrame frame = new JFrame("Server");// Another example player
-        gameEngine.setWalls(createMapWalls());
         map = new Map(gameEngine);
-        gameEngine.setWalls(createMapWalls());
 
         frame.add(map);
         frame.setSize(625, 625);
@@ -44,26 +36,7 @@ public class ServerGUI extends JFrame {
         frame.repaint();
 
     }
-    private Vector<Wall> createMapWalls() {
-        Vector<Wall> walls = new Vector<>();
-        String currentDirectory = System.getProperty("user.dir") +"/web-warriors/src/main/resources";
-        try (BufferedReader reader = new BufferedReader(new FileReader(currentDirectory+"/walls.txt"))){
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] parts = line.split(",");
-                int startX = Integer.parseInt(parts[0]);
-                int startY = Integer.parseInt(parts[1]);
-                int endX = Integer.parseInt(parts[2]);
-                int endY = Integer.parseInt(parts[3]);
-                walls.add(new Wall(startX, startY, endX, endY));
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
-
-        return walls;
-    }
     public void addClient(Integer clientID) {
         serverClients.addClient(clientID);
     }

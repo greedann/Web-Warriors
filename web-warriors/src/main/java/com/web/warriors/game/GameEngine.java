@@ -1,5 +1,8 @@
 package com.web.warriors.game;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
@@ -17,7 +20,7 @@ public class GameEngine {
 
     public GameEngine() {
         players = new Vector<Player>();
-        walls = new Vector<Wall>();
+        loadMapWalls();
     }
 
     public Player getPlayer(int id) {
@@ -36,6 +39,7 @@ public class GameEngine {
     public void addWall(Wall wall) {
         walls.add(wall);
     }
+
     public void setWalls(Vector<Wall> walls) {
         this.walls = walls;
     }
@@ -69,10 +73,17 @@ public class GameEngine {
     }
 
     public Vector<Player> getUpdates(int id) {
-        Vector<Player> players_to_send= new Vector<>();
-        for (Player pl: players) {
-            if (pl.getId() == id) continue;
-            players_to_send.add(pl);
+        Vector<Player> players_to_send = new Vector<>();
+        for (Player pl : players) {
+            if (pl.getId() == id)
+                continue;
+            if (!isWallBetween(pl.getX(), pl.getY(), players.get(id).getX(), players.get(id).getY()))
+                players_to_send.add(pl);
+            else{
+                Player pl_copy = pl;
+                pl_copy.hide();
+                players_to_send.add(pl_copy);
+            }
         }
         return players_to_send;
     }
@@ -86,6 +97,16 @@ public class GameEngine {
         for (Player p : players) {
             if (p.getId() == id) {
                 System.out.println("Player " + p.getId() + " disconnected");
+                switch (p.getTeam()) {
+                    case CounterTerrorists:
+                        counterTerrorists--;
+                        break;
+                    case Terrorists:
+                        terrorists--;
+                        break;
+                    default:
+                        break;
+                }
                 players.remove(p);
                 break;
             }
@@ -106,6 +127,33 @@ public class GameEngine {
         for (Player p : players) {
             updatePlayer(p);
         }
+    }
+
+    private void loadMapWalls() {
+        walls = new Vector<>();
+        String currentDirectory = System.getProperty("user.dir") + "/web-warriors/src/main/resources";
+        try (BufferedReader reader = new BufferedReader(new FileReader(currentDirectory + "/walls.txt"))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
+                int startX = Integer.parseInt(parts[0]);
+                int startY = Integer.parseInt(parts[1]);
+                int endX = Integer.parseInt(parts[2]);
+                int endY = Integer.parseInt(parts[3]);
+                walls.add(new Wall(startX, startY, endX, endY));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public Boolean isWallBetween(int x1, int y1, int x2, int y2) {
+        for (Wall wall : walls) {
+            if (wall.intersects(x1, y1, x2, y2)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void handleMessage(Map<String, Object> data, int id) {

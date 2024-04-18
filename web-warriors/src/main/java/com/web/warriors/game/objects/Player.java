@@ -37,8 +37,11 @@ public class Player implements Serializable {
         this.team = team;
     }
 
-
     public void move(int x, int y) {
+        if (x == -5 && y == -5) {
+            hide();
+            return;
+        }
         if (x > 3 && x < 147)
             this.x = x;
         if (y > 3 && y < 147)
@@ -79,6 +82,11 @@ public class Player implements Serializable {
 
     public void setTeam(Team team) {
         this.team = team;
+    }
+
+    public void hide() {
+        this.x = -5;
+        this.y = -5;
     }
 
     @Override

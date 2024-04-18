@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.web.warriors.game.ClientAplication;
 import com.web.warriors.game.GameEngine;
 import com.web.warriors.game.objects.Player;
-import com.web.warriors.game.objects.Wall;
 import com.web.warriors.gui.common.Map;
 
 import java.awt.*;
@@ -44,7 +43,6 @@ public class ClientGui {
     public ClientGui(ClientAplication clientAplication, GameEngine gameEngine) {
         this.clientAplication = clientAplication;
         JFrame frame = new JFrame("Client");
-        gameEngine.setWalls(createMapWalls());
         map = new Map(gameEngine);
         setPoints();
         frame.add(map);
@@ -186,25 +184,6 @@ public class ClientGui {
             e.printStackTrace();
         }
 
-    }
-
-    private Vector<Wall> createMapWalls() {
-        Vector<Wall> walls = new Vector<>();
-        String currentDirectory = System.getProperty("user.dir") + "/web-warriors/src/main/resources";
-        try (BufferedReader reader = new BufferedReader(new FileReader(currentDirectory + "/walls.txt"))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] parts = line.split(",");
-                int startX = Integer.parseInt(parts[0]);
-                int startY = Integer.parseInt(parts[1]);
-                int endX = Integer.parseInt(parts[2]);
-                int endY = Integer.parseInt(parts[3]);
-                walls.add(new Wall(startX, startY, endX, endY));
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return walls;
     }
 
     public void setPlayer(Player player) {

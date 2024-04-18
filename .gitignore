@@ -31,3 +31,8 @@ replay_pid*
 
 # MacOS files
 .DS_Store
+
+# configuration files in build directory
+web-warriors/target/classes/Points.txt
+web-warriors/target/classes/PointsNeighbors.txt
+web-warriors/target/classes/walls.txt
