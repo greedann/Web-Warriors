@@ -116,7 +116,7 @@ public class GameEngine {
     public void updatePlayer(Player player) {
         for (Player p : players) {
             if (p.getId() == player.getId()) {
-                p.move(player.getX(), player.getY());
+                p.setPosition(player.getX(), player.getY(), player.getAngle());
                 return;
             }
         }
@@ -162,9 +162,10 @@ public class GameEngine {
             case "position":
                 int x = (int) data.get("x");
                 int y = (int) data.get("y");
+                double angle = (double) data.get("angle");
                 for (Player p : players) {
                     if (p.getId() == id) {
-                        p.move(x, y);
+                        p.setPosition(x, y, angle);
                         break;
                     }
                 }

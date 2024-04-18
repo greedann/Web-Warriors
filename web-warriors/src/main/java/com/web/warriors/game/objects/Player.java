@@ -9,6 +9,7 @@ public class Player implements Serializable {
     private int x;
     private int y;
     private Team team;
+    private double angle;
 
     public Player() {
         this.name = "";
@@ -17,6 +18,7 @@ public class Player implements Serializable {
         this.x = 75;
         this.y = 75;
         this.team = Team.NONE;
+        this.angle = 0;
     }
 
     public Player(String name, int id) {
@@ -26,6 +28,7 @@ public class Player implements Serializable {
         this.x = 75;
         this.y = 75;
         this.team = Team.NONE;
+        this.angle = 0;
     }
 
     public Player(String name, int id, Team team) {
@@ -35,6 +38,7 @@ public class Player implements Serializable {
         this.x = 75;
         this.y = 75;
         this.team = team;
+        this.angle = 0;
     }
 
     public void move(int x, int y) {
@@ -42,10 +46,18 @@ public class Player implements Serializable {
             hide();
             return;
         }
-        if (x > 3 && x < 147)
+        if (x > 3 && x < 147 && y > 3 && y < 147) {
+            this.angle = Math.atan2(this.y - y, x - this.x);
             this.x = x;
-        if (y > 3 && y < 147)
             this.y = y;
+        }
+            
+    }
+
+    public void setPosition(int x, int y,double angle) {
+        this.x = x;
+        this.y = y;
+        this.angle = angle;
     }
 
     public void addScore(int score) {
@@ -87,6 +99,10 @@ public class Player implements Serializable {
     public void hide() {
         this.x = -5;
         this.y = -5;
+    }
+
+    public double getAngle() {
+        return angle;
     }
 
     @Override

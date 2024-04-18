@@ -51,6 +51,7 @@ public class ClientAplication {
         data.put("type", "position");
         data.put("x", myPlayer.getX());
         data.put("y", myPlayer.getY());
+        data.put("angle", myPlayer.getAngle());
         try {
             return mapper.writeValueAsString(data);
         } catch (JsonProcessingException e) {
