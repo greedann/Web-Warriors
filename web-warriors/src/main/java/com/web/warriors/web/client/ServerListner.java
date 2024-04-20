@@ -7,6 +7,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.web.warriors.game.objects.Hostage;
 import com.web.warriors.game.objects.Player;
 import com.web.warriors.game.objects.Team;
 import java.util.List;
@@ -42,13 +43,16 @@ public class ServerListner implements Runnable {
                                     team = Team.CounterTerrorists;
                                     break;
                             }
-                            System.out.println(team);
-                            client.setId(x);
-                            client.setTeam(team);
+                            client.init(x,team);
                             break;
                         case "updates":
-                            List<Player> players = mapper.readValue((String)data.get("players"), new TypeReference<List<Player>>() {});
+                            List<Player> players = mapper.readValue(mapper.writeValueAsString(data.get("players")), new TypeReference<List<Player>>() {});
                             client.updatePlayers(players);
+                            List<Hostage> hostages = mapper.readValue(mapper.writeValueAsString(data.get("hostages")), new TypeReference<List<Hostage>>() {});
+                            client.updateHostages(hostages);
+                            break;
+                        case "remove_player":
+                            client.removePlayer((int)data.get("id"));
                             break;
                         default:
                             break;

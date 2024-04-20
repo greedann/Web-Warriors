@@ -3,10 +3,10 @@ package com.web.warriors.game;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
-import java.util.Vector;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.web.warriors.game.objects.Hostage;
 import com.web.warriors.game.objects.Player;
 import com.web.warriors.game.objects.Team;
 import com.web.warriors.gui.client.ClientGui;
@@ -19,13 +19,11 @@ public class ClientAplication {
     Player myPlayer = null;
     ObjectMapper mapper = new ObjectMapper();
 
-
     public ClientAplication() {
         gameEngine = new GameEngine();
         client = new Client(this);
         clientGui = new ClientGui(this, gameEngine);
     }
-
 
     public void start() {
         client.run();
@@ -65,9 +63,9 @@ public class ClientAplication {
         return myPlayer;
     }
 
-    public void setId(int id) {
+    public void init(int id, Team team) {
         if (myPlayer == null) {
-            setPlayer(new Player("Me", id));
+            setPlayer(new Player("Me", id, team));
         } else {
             myPlayer.setId(id);
         }
@@ -88,7 +86,21 @@ public class ClientAplication {
     }
 
     public void updatePlayers(List<Player> players) {
-        gameEngine.updatePlayers(players);
+        for (Player p : players) {
+            if (p.getId() == myPlayer.getId()) {
+                myPlayer.setHostage(p.getHostage());
+                continue;
+            }
+            gameEngine.updatePlayer(p);
+        }
+    }
+
+    public void updateHostages(List<Hostage> hostages) {
+        gameEngine.updateHostages(hostages);
+    }
+
+    public void removePlayer(int id) {
+        gameEngine.removePlayer(id);
     }
 
     public static void main(String[] args) {

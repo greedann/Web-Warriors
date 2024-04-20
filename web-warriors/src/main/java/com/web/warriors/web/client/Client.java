@@ -12,6 +12,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.web.warriors.game.ClientAplication;
+import com.web.warriors.game.objects.Hostage;
 import com.web.warriors.game.objects.Player;
 import com.web.warriors.game.objects.Team;
 
@@ -85,8 +86,12 @@ public class Client implements Runnable {
         }
     }
 
-    public void setId(int id) {
-        clientAplication.setId(id);
+    public void init(int id, Team team) {
+        clientAplication.init(id, team);
+    }
+
+    public void removePlayer(int id) {
+        clientAplication.removePlayer(id);
     }
 
     public int getId() {
@@ -99,6 +104,10 @@ public class Client implements Runnable {
 
     public void updatePlayers(List<Player> players) {
         clientAplication.updatePlayers(players);
+    }
+
+    public void updateHostages(List<Hostage> hostages) {
+        clientAplication.updateHostages(hostages);
     }
 
     public void disconnect() {

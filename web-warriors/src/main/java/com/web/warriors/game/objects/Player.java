@@ -10,6 +10,7 @@ public class Player implements Serializable {
     private int y;
     private Team team;
     private double angle;
+    private Hostage hostage = null;
 
     public Player(Player other) {
         name = other.name;
@@ -44,10 +45,19 @@ public class Player implements Serializable {
         this.name = name;
         this.id = id;
         this.score = 0;
-        this.x = 75;
-        this.y = 75;
         this.team = team;
         this.angle = 0;
+        switch (team) {
+            case CounterTerrorists:
+                x = 95;
+                y = 137;
+                break;
+            case Terrorists:
+                x = 67;
+                y = 39;
+            default:
+                break;
+        }
     }
 
     public void move(int x, int y) {
@@ -60,10 +70,26 @@ public class Player implements Serializable {
             this.x = x;
             this.y = y;
         }
-            
     }
 
-    public void setPosition(int x, int y,double angle) {
+    public boolean takeHostage(Hostage hostage) {
+        if (team == Team.Terrorists)
+            return false;
+        if (this.hostage != null)
+            return false;
+        this.hostage = hostage;
+        return true;
+    }
+
+    public Hostage getHostage() {
+        return hostage;
+    }
+
+    public void setHostage(Hostage hostage) {
+        this.hostage = hostage;
+    }
+
+    public void setPosition(int x, int y, double angle) {
         this.x = x;
         this.y = y;
         this.angle = angle;

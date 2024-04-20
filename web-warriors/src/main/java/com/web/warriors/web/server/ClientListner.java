@@ -25,6 +25,7 @@ public class ClientListner implements Runnable {
                 String message = objectIn.readObject().toString();
                 // System.out.println("Client sent: " + message);
                 if (handleMessage(message, id)) { // if true, break the loop
+                    server.removeClient(id);
                     break;
                 }
             }
@@ -49,7 +50,6 @@ public class ClientListner implements Runnable {
                 return false;
 
         } catch (
-
         JsonMappingException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

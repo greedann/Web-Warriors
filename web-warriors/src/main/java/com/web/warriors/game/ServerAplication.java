@@ -10,7 +10,7 @@ import com.web.warriors.game.objects.Team;
 import com.web.warriors.gui.server.ServerGUI;
 import com.web.warriors.web.server.Server;
 
-public class ServerAplication implements Runnable {
+public class ServerAplication {
     GameEngine gameEngine;
     Server server;
     ServerGUI serverGUI;
@@ -18,16 +18,12 @@ public class ServerAplication implements Runnable {
 
     public ServerAplication() {
         gameEngine = new GameEngine();
-    }
-
-    @Override
-    public void run() {
         server = new Server(this);
         serverGUI = new ServerGUI(server, gameEngine);
+    }
 
-        Thread serverThread = new Thread(server);
-        serverThread.start();
-
+    public void start() {
+        server.run();
     }
 
     public void sendToOne(String message, int id) {
@@ -62,6 +58,11 @@ public class ServerAplication implements Runnable {
     public void removeClient(int id) {
         serverGUI.removeClient(id);
         gameEngine.removePlayer(id);
+        // send to all players
+        Map<String, Object> data = new HashMap<>();
+        data.put("type", "remove_player");
+        data.put("id", id);
+        sendToAll(data);
     }
 
     public String dataToJson(Map<String, Object> data) {
@@ -91,17 +92,15 @@ public class ServerAplication implements Runnable {
     public void sendUpdates() {
         for (Player player : gameEngine.getPlayers()) {
             Map<String, Object> data = new HashMap<>();
-            String json = dataToJson(gameEngine.getUpdates(player.getId()));
             data.put("type", "updates");
-            data.put("players", json);
+            data.put("players", gameEngine.getUpdatesPlayers(player.getId()));
+            data.put("hostages", gameEngine.getUpdatesHostages(player.getId()));
             sendToOne(data, player.getId());
         }
     }
 
     public static void main(String[] args) {
         ServerAplication serverAplication = new ServerAplication();
-        Thread serverThread = new Thread(serverAplication);
-        serverThread.start();
+        serverAplication.start();
     }
-
 }

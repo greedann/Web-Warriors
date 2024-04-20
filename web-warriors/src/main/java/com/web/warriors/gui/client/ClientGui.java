@@ -113,7 +113,7 @@ public class ClientGui {
     }
 
     private void autoMovePlayer() {
-        if (player == null) {
+        if (player == null || player.getTeam() == null) {
             // player = clientAplication.getPlayer();
             return;
         }
@@ -188,8 +188,16 @@ public class ClientGui {
 
     public void setPlayer(Player player) {
         this.player = player;
-        int randPoint = new Random().nextInt(15) + 1;
-        AimPoint = randPoint;
-        player.move(points.get(randPoint).x, points.get(randPoint).y);
+        map.setUserPlayer(player);
+        switch (player.getTeam()) {
+            case CounterTerrorists:
+                AimPoint = 15;
+                break;
+            case Terrorists:
+                AimPoint = 3;
+                break;
+            default:
+                break;
+        }
     }
 }

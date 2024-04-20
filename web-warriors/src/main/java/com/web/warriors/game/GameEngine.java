@@ -8,18 +8,21 @@ import java.util.Map;
 import java.util.Vector;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.web.warriors.game.objects.Hostage;
 import com.web.warriors.game.objects.Player;
 import com.web.warriors.game.objects.Team;
 import com.web.warriors.game.objects.Wall;
 
 public class GameEngine {
     Vector<Player> players;
+    Vector<Hostage> hostages;
     Vector<Wall> walls;
     ObjectMapper mapper = new ObjectMapper();
-    int terrorists = 0, counterTerrorists = 0;
+    int terrorists = 0, counterTerrorists = 0, hostages_num = 0;
 
     public GameEngine() {
         players = new Vector<Player>();
+        hostages = new Vector<Hostage>();
         loadMapWalls();
     }
 
@@ -34,6 +37,15 @@ public class GameEngine {
 
     public Vector<Player> getPlayers() {
         return players;
+    }
+
+    public Vector<Hostage> getHostages() {
+        return hostages;
+    }
+
+    public void addHostage() {
+        Hostage newHostage = new Hostage(hostages_num++, 67, 67);
+        hostages.add(newHostage);
     }
 
     public void addWall(Wall wall) {
@@ -64,6 +76,7 @@ public class GameEngine {
                 terrorists++;
                 break;
             case CounterTerrorists:
+                addHostage();
                 counterTerrorists++;
                 break;
             default:
@@ -72,12 +85,11 @@ public class GameEngine {
         players.add(player);
     }
 
-    public Vector<Player> getUpdates(int id) {
+    public Vector<Player> getUpdatesPlayers(int id) {
         Vector<Player> players_to_send = new Vector<>();
         for (Player pl : players) {
-            if (pl.getId() == id)
-                continue;
-            if (!isWallBetween(pl.getX(), pl.getY(), players.get(id).getX(), players.get(id).getY()))
+            if (pl.getTeam() == getPlayer(id).getTeam()
+                    || !isWallBetween(pl.getX(), pl.getY(), getPlayer(id).getX(), getPlayer(id).getY()))
                 players_to_send.add(pl);
             else {
                 Player pl_copy = new Player(pl);
@@ -86,6 +98,14 @@ public class GameEngine {
             }
         }
         return players_to_send;
+    }
+
+    public Vector<Hostage> getUpdatesHostages(int id) {
+        Vector<Hostage> hostages_to_send = new Vector<>();
+        for (Hostage h : hostages) {
+            hostages_to_send.add(h);
+        }
+        return hostages_to_send;
     }
 
     public void addPlayer(Player player) {
@@ -117,15 +137,27 @@ public class GameEngine {
         for (Player p : players) {
             if (p.getId() == player.getId()) {
                 p.setPosition(player.getX(), player.getY(), player.getAngle());
+                p.setHostage(player.getHostage());
                 return;
             }
         }
         players.add(player);
     }
 
-    public void updatePlayers(List<Player> players) {
-        for (Player p : players) {
-            updatePlayer(p);
+    public void updateHostage(Hostage hostage) {
+        for (Hostage h : hostages) {
+            if (h.getId() == hostage.getId()) {
+                h.setPosition(hostage.getX(), hostage.getY());
+                return;
+            }
+        }
+        hostages.add(hostage);
+    }
+
+    public void updateHostages(List<Hostage> hostages) {
+        this.hostages.clear();
+        for (Hostage h : hostages) {
+            updateHostage(h);
         }
     }
 
@@ -166,6 +198,14 @@ public class GameEngine {
                 for (Player p : players) {
                     if (p.getId() == id) {
                         p.setPosition(x, y, angle);
+                        for (Hostage h : hostages) {
+                            if (Math.abs(h.getX() - p.getX()) < 15 && Math.abs(h.getY() - p.getY()) < 15) {
+                                if (p.takeHostage(h)) {
+                                    hostages.remove(h);
+                                    break;
+                                }
+                            }
+                        }
                         break;
                     }
                 }
