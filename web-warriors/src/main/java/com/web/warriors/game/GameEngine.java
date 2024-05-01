@@ -1,5 +1,6 @@
 package com.web.warriors.game;
 
+import java.awt.*;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -17,6 +18,7 @@ public class GameEngine {
     Vector<Player> players;
     Vector<Hostage> hostages;
     Vector<Wall> walls;
+    Vector<Point> hostagePoints;
     ObjectMapper mapper = new ObjectMapper();
     int terrorists = 0, counterTerrorists = 0, hostages_num = 0;
 
@@ -24,6 +26,7 @@ public class GameEngine {
         players = new Vector<Player>();
         hostages = new Vector<Hostage>();
         loadMapWalls();
+        loadHostagePoints();
     }
 
     public Player getPlayer(int id) {
@@ -44,7 +47,8 @@ public class GameEngine {
     }
 
     public void addHostage() {
-        Hostage newHostage = new Hostage(hostages_num++, 67, 67);
+        Point point = new Point(hostagePoints.get(hostages_num%5+1));
+        Hostage newHostage = new Hostage(hostages_num++, (int)point.getX(), (int)point.getY());
         hostages.add(newHostage);
     }
 
@@ -163,7 +167,7 @@ public class GameEngine {
 
     private void loadMapWalls() {
         walls = new Vector<>();
-        String currentDirectory = System.getProperty("user.dir") + "/web-warriors/src/main/resources";
+        String currentDirectory = System.getProperty("user.dir") + "/src/main/resources";
         try (BufferedReader reader = new BufferedReader(new FileReader(currentDirectory + "/walls.txt"))) {
             String line;
             while ((line = reader.readLine()) != null) {
@@ -178,6 +182,20 @@ public class GameEngine {
             e.printStackTrace();
         }
     }
+    private void loadHostagePoints(){
+        hostagePoints = new Vector<>();
+        String currentDirectory = System.getProperty("user.dir") + "/src/main/resources";
+        try (BufferedReader reader = new BufferedReader(new FileReader(currentDirectory + "/hostagePoints.txt"))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
+                int x = Integer.parseInt(parts[0]);
+                int y = Integer.parseInt(parts[1]);
+                hostagePoints.add(new Point(x, y));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+    }}
 
     public Boolean isWallBetween(int x1, int y1, int x2, int y2) {
         for (Wall wall : walls) {
@@ -202,6 +220,7 @@ public class GameEngine {
                             if (Math.abs(h.getX() - p.getX()) < 15 && Math.abs(h.getY() - p.getY()) < 15) {
                                 if (p.takeHostage(h)) {
                                     hostages.remove(h);
+
                                     break;
                                 }
                             }

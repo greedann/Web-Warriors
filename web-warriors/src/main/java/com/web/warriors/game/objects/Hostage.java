@@ -7,6 +7,8 @@ public class Hostage implements Serializable {
     private int x;
     private int y;
 
+    private Player whoTakes = null;
+
     public Hostage() {
         id = -1;
         x = -5;
@@ -34,5 +36,12 @@ public class Hostage implements Serializable {
     public void setPosition(int x, int y) {
         this.x = x;
         this.y = y;
+    }
+
+    public void setWhoTakes(Player player){
+        whoTakes = player;
+    }
+    public Player getWhoTakes(){
+        return whoTakes;
     }
 }

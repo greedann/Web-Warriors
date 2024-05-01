@@ -3,6 +3,7 @@ package com.web.warriors.game;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
+import java.util.Vector;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -94,11 +95,21 @@ public class ClientAplication {
             gameEngine.updatePlayer(p);
         }
     }
+    public Hostage getHostage() {
+        for (Player p : gameEngine.getPlayers()) {
+            if (p.getId() == myPlayer.getId()) {
+                return p.getHostage();
+            }
+        }
+        return null;
+    }
 
     public void updateHostages(List<Hostage> hostages) {
         gameEngine.updateHostages(hostages);
     }
-
+    public Vector<Hostage> getHostages() {
+        return gameEngine.getHostages();
+    }
     public void removePlayer(int id) {
         gameEngine.removePlayer(id);
     }

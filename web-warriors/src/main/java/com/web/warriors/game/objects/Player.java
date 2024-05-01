@@ -1,5 +1,6 @@
 package com.web.warriors.game.objects;
 
+import java.awt.*;
 import java.io.Serializable;
 
 public class Player implements Serializable {
@@ -11,6 +12,10 @@ public class Player implements Serializable {
     private Team team;
     private double angle;
     private Hostage hostage = null;
+
+
+
+    private Integer nextPoint = null;
 
     public Player(Player other) {
         name = other.name;
@@ -59,7 +64,12 @@ public class Player implements Serializable {
                 break;
         }
     }
-
+    public int getNextPoint() {
+        return nextPoint;
+    }
+    public void setNextPoint(int nextPoint) {
+        this.nextPoint = nextPoint;
+    }
     public void move(int x, int y) {
         if (x == -5 && y == -5) {
             hide();
@@ -78,6 +88,7 @@ public class Player implements Serializable {
         if (this.hostage != null)
             return false;
         this.hostage = hostage;
+        hostage.setWhoTakes(this);
         return true;
     }
 
