@@ -70,7 +70,7 @@ public class ServerAplication {
             String json = mapper.writeValueAsString(data);
             return json;
         } catch (Exception e) {
-            System.out.println("Error: " + e);
+            e.printStackTrace();
         }
         return null;
     }
@@ -80,13 +80,13 @@ public class ServerAplication {
             String json = mapper.writeValueAsString(data);
             return json;
         } catch (Exception e) {
-            System.out.println("Error: " + e);
+            e.printStackTrace();
         }
         return null;
     }
 
     public void handleMessage(Map<String, Object> data, int id) {
-        gameEngine.handleMessage(data, id);
+        gameEngine.processMessage(data, id);
     }
 
     public void sendUpdates() {

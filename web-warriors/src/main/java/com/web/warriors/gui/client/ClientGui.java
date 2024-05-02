@@ -29,13 +29,14 @@ public class ClientGui {
     private Map map;
     private Player player = null;
     ObjectMapper mapper = new ObjectMapper();
+    String currentDirectory = System.getProperty("user.dir") + "/web-warriors/src/main/resources";
 
     private boolean isMovingLeft = false;
     private boolean isMovingRight = false;
     private boolean isMovingUp = false;
     private boolean isMovingDown = false;
     Vector<Vector<Integer>> PointsNeighbors;
-    List<List<Integer> > graph;
+    List<List<Integer>> graph;
     Vector<Point> points;
 
     private Integer nextPoint;
@@ -60,7 +61,7 @@ public class ClientGui {
             @Override
             public void run() {
                 makeMovePlayer();
-                //autoMovePlayer();
+                // autoMovePlayer();
             }
         }, 0, MILLISECONDS_PER_TICK);
 
@@ -115,7 +116,8 @@ public class ClientGui {
             }
         });
     }
-    private void logicMovement(){
+
+    private void logicMovement() {
         if (player == null || player.getTeam() == null) {
             return;
         }
@@ -123,61 +125,57 @@ public class ClientGui {
         if (player.getTeam() == Team.CounterTerrorists) {
             Hostage hostage = new Hostage();
             hostage = getHostage();
-             if ((player.getX() == points.get(1).x && player.getY() == points.get(1).y) || (player.getX() == points.get(4).x && player.getY() == points.get(4).y) && hostage == null) {
+            if ((player.getX() == points.get(1).x && player.getY() == points.get(1).y)
+                    || (player.getX() == points.get(4).x && player.getY() == points.get(4).y) && hostage == null) {
                 if (player.getX() == points.get(1).x) {
                     aimPoint = 4;
                 } else {
                     aimPoint = 1;
                 }
-            }
-            else if(hostage == null) {
-                //make random beween 2 numbers (1 or 4)
+            } else if (hostage == null) {
+                // make random beween 2 numbers (1 or 4)
                 aimPoint = random.nextInt(2) == 0 ? 1 : 4;
-            }
-            else if(hostage != null){
+            } else if (hostage != null) {
                 aimPoint = 15;
-            }
-            else {
+            } else { // TODO fix unreached code
                 aimPoint = random.nextInt(15) + 1;
             }
-        }
-        else if (player.getTeam() == Team.Terrorists){
+        } else if (player.getTeam() == Team.Terrorists) {
             Vector<Hostage> hostages = clientAplication.getHostages();
-            Hostage randomHostage = hostages.get(random.nextInt(hostages.size()));
-            if (randomHostage.getWhoTakes() != null){
+            Hostage randomHostage = hostages.get(random.nextInt(hostages.size())); // TODO size of hostage may be 0
+            if (randomHostage.isTaken()) {
                 aimPoint = 15;
-            }
-            else if(player.getX() != points.get(1).x && player.getY() != points.get(1).y && randomHostage.getY() == 30){
+            } else if (player.getX() != points.get(1).x && player.getY() != points.get(1).y
+                    && randomHostage.getY() == 30) {
                 aimPoint = 1;
-            }
-            else if(player.getX() != points.get(4).x && player.getY() != points.get(4).y && randomHostage.getY() == 10)
+            } else if (player.getX() != points.get(4).x && player.getY() != points.get(4).y
+                    && randomHostage.getY() == 10)
                 aimPoint = 4;
-            }
-            else {
-              aimPoint = random.nextInt(15) + 1;
+        } else {
+            aimPoint = random.nextInt(15) + 1;
         }
     }
-    private void makeMovePlayer(){
+
+    private void makeMovePlayer() {
         if (player == null || player.getTeam() == null) {
             player = clientAplication.getPlayer();
             return;
         }
 
-
-        if (aimPoint == null){
+        if (aimPoint == null) {
             logicMovement();
         }
-        if (nextPoint == null){
+        if (nextPoint == null) {
             nextPoint = findShortestWay(graph, currentPoint, aimPoint, PointsNeighbors.size());
         }
         Point currentPosition = new Point(player.getX(), player.getY());
-        if(currentPosition.equals(points.get(aimPoint))){
+        if (currentPosition.equals(points.get(aimPoint))) {
             currentPoint = aimPoint;
             nextPoint = null;
             aimPoint = null;
             return;
         }
-        if (currentPosition.equals(points.get(nextPoint))){
+        if (currentPosition.equals(points.get(nextPoint))) {
             currentPoint = nextPoint;
             nextPoint = null;
             return;
@@ -236,9 +234,9 @@ public class ClientGui {
         }
         player.move(player.getX() + deltaX, player.getY() + deltaY);
     }
-    static void bfs(List<List<Integer> > graph, int S,
-                    List<Integer> par, List<Integer> dist)
-    {
+
+    static void bfs(List<List<Integer>> graph, int S,
+            List<Integer> par, List<Integer> dist) {
         // Queue to store the nodes in the order they are
         // visited
         Queue<Integer> q = new LinkedList<>();
@@ -256,8 +254,7 @@ public class ClientGui {
             for (int neighbor : graph.get(node)) {
                 // Check if the neighboring node is not
                 // visited
-                if (dist.get(neighbor)
-                        == Integer.MAX_VALUE) {
+                if (dist.get(neighbor) == Integer.MAX_VALUE) {
                     // Mark the current node as the parent
                     // of the neighboring node
                     par.set(neighbor, node);
@@ -272,13 +269,11 @@ public class ClientGui {
             }
         }
     }
-    static Integer
-    findShortestWay(List<List<Integer> > graph, int S,
-                          int D, int V)
-    {
+
+    static Integer findShortestWay(List<List<Integer>> graph, int S,
+            int D, int V) {
         // par[] array stores the parent of nodes
-        List<Integer> par
-                = new ArrayList<>(Collections.nCopies(V, -1));
+        List<Integer> par = new ArrayList<>(Collections.nCopies(V, -1));
 
         // dist[] array stores the distance of nodes from S
         List<Integer> dist = new ArrayList<>(
@@ -303,16 +298,13 @@ public class ClientGui {
             currentNode = par.get(currentNode);
         }
 
-        // Printing path from source to destination
-        System.out.println("start\n");
-        for (int i = path.size() - 1; i >= 0; i--)
-            System.out.print(i + " " + path.get(i) + " ");
-        System.out.println('\n');
-        System.out.println("returned" + path.get(path.size()-2));
-        return path.get(path.size()-2);
+        if (path.size() < 2) // TODO fix path point
+            return 15;
+
+        return path.get(path.size() - 2);
     }
+
     private void setPoints() {
-        String currentDirectory = System.getProperty("user.dir") + "/src/main/resources";
         Vector<Vector<Integer>> PointsNeighbors = new Vector<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(currentDirectory + "/PointsNeighbors.txt"))) {
             String line;
@@ -326,21 +318,21 @@ public class ClientGui {
             e.printStackTrace();
         }
         this.PointsNeighbors = PointsNeighbors;
-        List<List<Integer> > edges = new ArrayList<>();
+        List<List<Integer>> edges = new ArrayList<>();
         for (int i = 0; i < PointsNeighbors.size(); i++) {
-                    List<Integer> neighbors = PointsNeighbors.get(i);
-                    for (int j = 0; j < neighbors.size(); j++) {
-                        edges.add(Arrays.asList(i, neighbors.get(j)));
-                    }
-                }
+            List<Integer> neighbors = PointsNeighbors.get(i);
+            for (int j = 0; j < neighbors.size(); j++) {
+                edges.add(Arrays.asList(i, neighbors.get(j)));
+            }
+        }
         int V = PointsNeighbors.size();
-        List<List<Integer> > graph = new ArrayList<>(V);
+        List<List<Integer>> graph = new ArrayList<>(V);
         for (int i = 0; i < V; i++) {
             graph.add(new ArrayList<>());
         }
         for (List<Integer> edge : edges) {
             graph.get(edge.get(0)).add(edge.get(1));
-           // graph.get(edge.get(1)).add(edge.get(0));
+            // graph.get(edge.get(1)).add(edge.get(0));
         }
         this.graph = graph;
 
@@ -358,18 +350,18 @@ public class ClientGui {
         }
 
     }
+
     public Hostage getHostage() {
         Hostage loh = clientAplication.getPlayer().getHostage();
-       return clientAplication.getHostage();
+        return clientAplication.getHostage();
     }
-
 
     public void setPlayer(Player player) {
         this.player = player;
         map.setUserPlayer(player);
         switch (player.getTeam()) {
             case CounterTerrorists:
-                //nextPoint = 15;
+                // nextPoint = 15;
                 currentPoint = 15;
                 break;
             case Terrorists:
@@ -381,4 +373,3 @@ public class ClientGui {
         }
     }
 }
-

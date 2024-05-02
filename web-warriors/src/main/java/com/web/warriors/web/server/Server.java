@@ -45,7 +45,7 @@ public class Server implements Runnable {
                 t.start();
             }
         } catch (Exception e) {
-            System.out.println("Error: " + e);
+            e.printStackTrace();
         }
     }
 

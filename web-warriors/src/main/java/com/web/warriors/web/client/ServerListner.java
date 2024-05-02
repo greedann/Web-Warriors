@@ -67,7 +67,7 @@ public class ServerListner implements Runnable {
                 }
             }
         } catch (Exception e) {
-            System.out.println("Error: " + e);
+            e.printStackTrace();
         }
     }
 
@@ -76,7 +76,7 @@ public class ServerListner implements Runnable {
             objectIn.close();
             Thread.currentThread().interrupt();
         } catch (Exception e) {
-            System.out.println("Error: " + e);
+            e.printStackTrace();
         }
     }
 }

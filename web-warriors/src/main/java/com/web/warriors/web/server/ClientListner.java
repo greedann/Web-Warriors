@@ -30,7 +30,7 @@ public class ClientListner implements Runnable {
                 }
             }
         } catch (Exception e) {
-            System.out.println("Error: " + e);
+            e.printStackTrace();
             // disconnect client from server
             server.removeClient(id);
 

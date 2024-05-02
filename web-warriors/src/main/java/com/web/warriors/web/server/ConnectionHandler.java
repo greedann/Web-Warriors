@@ -35,7 +35,7 @@ public class ConnectionHandler implements Runnable {
             thread.start();
 
         } catch (Exception e) {
-            System.out.println("Error: " + e);
+            e.printStackTrace();
         }
     }
 

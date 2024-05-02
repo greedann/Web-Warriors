@@ -58,7 +58,7 @@ public class Client implements Runnable {
                 }
             }, 0, MILLISECONDS_PER_TICK);
         } catch (Exception e) {
-            System.out.println("Error: " + e);
+            e.printStackTrace();
         }
     }
 
@@ -71,7 +71,7 @@ public class Client implements Runnable {
             objectOut.writeObject(message);
             objectOut.flush();
         } catch (Exception e) {
-            System.out.println("Error: " + e);
+            e.printStackTrace();
         }
     }
 
@@ -82,7 +82,7 @@ public class Client implements Runnable {
             objectOut.writeObject(msg);
             objectOut.flush();
         } catch (Exception e) {
-            System.out.println("Error: " + e);
+            e.printStackTrace();
         }
     }
 
@@ -121,7 +121,7 @@ public class Client implements Runnable {
         try {
             socket.close();
         } catch (Exception e) {
-            System.out.println("Error: " + e);
+            e.printStackTrace();
         }
 
         // stop client thread

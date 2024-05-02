@@ -108,17 +108,21 @@ public class Map extends JPanel {
                     wall.getEnd_x() * cellSize / 6, wall.getEnd_y() * cellSize / 6);
         }
 
-        for (Hostage hostage : hostages) {
-            // draw circle
-            g.setColor(Color.YELLOW);
+        try {
+            for (Hostage hostage : hostages) {
+                // draw circle
+                g.setColor(Color.YELLOW);
 
-            int radius = cellSize / 2;
+                int radius = cellSize / 2;
 
-            int centerX = hostage.getX() * cellSize / 6 + radius;
-            int centerY = hostage.getY() * cellSize / 6 + radius;
-            g.fillOval(centerX - radius, centerY - radius, cellSize, cellSize);
-
+                int centerX = hostage.getX() * cellSize / 6 + radius;
+                int centerY = hostage.getY() * cellSize / 6 + radius;
+                g.fillOval(centerX - radius, centerY - radius, cellSize, cellSize);
+            }
+        } catch (java.util.ConcurrentModificationException e) {
+            // TODO: implement locks to hostages
         }
+
     }
 
     public void addPlayer(Player player) {

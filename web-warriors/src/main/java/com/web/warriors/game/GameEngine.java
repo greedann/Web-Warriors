@@ -20,6 +20,7 @@ public class GameEngine {
     Vector<Wall> walls;
     Vector<Point> hostagePoints;
     ObjectMapper mapper = new ObjectMapper();
+    String currentDirectory = System.getProperty("user.dir") + "/web-warriors/src/main/resources";
     int terrorists = 0, counterTerrorists = 0, hostages_num = 0;
 
     public GameEngine() {
@@ -47,8 +48,8 @@ public class GameEngine {
     }
 
     public void addHostage() {
-        Point point = new Point(hostagePoints.get(hostages_num%5+1));
-        Hostage newHostage = new Hostage(hostages_num++, (int)point.getX(), (int)point.getY());
+        Point point = new Point(hostagePoints.get(hostages_num % 4 + 1));
+        Hostage newHostage = new Hostage(hostages_num++, (int) point.getX(), (int) point.getY());
         hostages.add(newHostage);
     }
 
@@ -167,7 +168,6 @@ public class GameEngine {
 
     private void loadMapWalls() {
         walls = new Vector<>();
-        String currentDirectory = System.getProperty("user.dir") + "/src/main/resources";
         try (BufferedReader reader = new BufferedReader(new FileReader(currentDirectory + "/walls.txt"))) {
             String line;
             while ((line = reader.readLine()) != null) {
@@ -182,9 +182,9 @@ public class GameEngine {
             e.printStackTrace();
         }
     }
-    private void loadHostagePoints(){
+
+    private void loadHostagePoints() {
         hostagePoints = new Vector<>();
-        String currentDirectory = System.getProperty("user.dir") + "/src/main/resources";
         try (BufferedReader reader = new BufferedReader(new FileReader(currentDirectory + "/hostagePoints.txt"))) {
             String line;
             while ((line = reader.readLine()) != null) {
@@ -195,7 +195,8 @@ public class GameEngine {
             }
         } catch (IOException e) {
             e.printStackTrace();
-    }}
+        }
+    }
 
     public Boolean isWallBetween(int x1, int y1, int x2, int y2) {
         for (Wall wall : walls) {
@@ -206,7 +207,7 @@ public class GameEngine {
         return false;
     }
 
-    public void handleMessage(Map<String, Object> data, int id) {
+    public void processMessage(Map<String, Object> data, int id) {
         String type = (String) data.get("type");
         switch (type) {
             case "position":
@@ -220,9 +221,17 @@ public class GameEngine {
                             if (Math.abs(h.getX() - p.getX()) < 15 && Math.abs(h.getY() - p.getY()) < 15) {
                                 if (p.takeHostage(h)) {
                                     hostages.remove(h);
-
                                     break;
                                 }
+                            }
+                        }
+
+                        // check if player carried hostage to ct spawh
+                        if (p.getTeam() == Team.CounterTerrorists && p.getHostage() != null) {
+                            // check if position is nearby
+                            if (Math.abs(p.getX() - 95) < 3 && Math.abs(p.getY() - 137) < 15) {
+                                p.leaveHostage();
+                                addHostage();
                             }
                         }
                         break;

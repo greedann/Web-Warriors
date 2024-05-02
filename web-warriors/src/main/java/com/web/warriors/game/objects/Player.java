@@ -13,8 +13,6 @@ public class Player implements Serializable {
     private double angle;
     private Hostage hostage = null;
 
-
-
     private Integer nextPoint = null;
 
     public Player(Player other) {
@@ -24,6 +22,7 @@ public class Player implements Serializable {
         x = other.x;
         y = other.y;
         team = other.team;
+        nextPoint = other.nextPoint;
     }
 
     public Player() {
@@ -34,6 +33,7 @@ public class Player implements Serializable {
         this.y = 75;
         this.team = Team.NONE;
         this.angle = 0;
+        this.nextPoint = 1;
     }
 
     public Player(String name, int id) {
@@ -44,6 +44,7 @@ public class Player implements Serializable {
         this.y = 75;
         this.team = Team.NONE;
         this.angle = 0;
+        this.nextPoint = 1;
     }
 
     public Player(String name, int id, Team team) {
@@ -52,6 +53,7 @@ public class Player implements Serializable {
         this.score = 0;
         this.team = team;
         this.angle = 0;
+        this.nextPoint = 1;
         switch (team) {
             case CounterTerrorists:
                 x = 95;
@@ -64,12 +66,15 @@ public class Player implements Serializable {
                 break;
         }
     }
+
     public int getNextPoint() {
         return nextPoint;
     }
+
     public void setNextPoint(int nextPoint) {
         this.nextPoint = nextPoint;
     }
+
     public void move(int x, int y) {
         if (x == -5 && y == -5) {
             hide();
@@ -88,7 +93,7 @@ public class Player implements Serializable {
         if (this.hostage != null)
             return false;
         this.hostage = hostage;
-        hostage.setWhoTakes(this);
+        hostage.take();
         return true;
     }
 
@@ -149,6 +154,11 @@ public class Player implements Serializable {
 
     public double getAngle() {
         return angle;
+    }
+
+    public void leaveHostage() {
+        this.hostage = null;
+        this.score += 50;
     }
 
     @Override
