@@ -103,13 +103,23 @@ public class ClientAplication {
         }
         return null;
     }
+    public Vector<Hostage> getHostages() {
+        Vector <Hostage> hostages = new Vector<>();
+        for (Player p : gameEngine.getPlayers()) {
+            if(p.getHostage() != null) {
+                hostages.add(p.getHostage());
+            }
+        }
+        return hostages;
+    }
+    public Vector<Hostage> getHostagesFromGE() {
+        return gameEngine.getHostages();
+    }
 
     public void updateHostages(List<Hostage> hostages) {
         gameEngine.updateHostages(hostages);
     }
-    public Vector<Hostage> getHostages() {
-        return gameEngine.getHostages();
-    }
+
     public void removePlayer(int id) {
         gameEngine.removePlayer(id);
     }

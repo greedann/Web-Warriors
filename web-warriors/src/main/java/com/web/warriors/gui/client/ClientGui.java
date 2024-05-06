@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class ClientGui {
-    private final int MOVES_PER_SECONDS = 40;
+    private final int MOVES_PER_SECONDS = 20;
     private final int MILLISECONDS_PER_TICK = 1000 / MOVES_PER_SECONDS;
     private ClientAplication clientAplication;
     private Map map;
@@ -123,8 +123,8 @@ public class ClientGui {
         }
         Random random = new Random();
         if (player.getTeam() == Team.CounterTerrorists) {
-            Hostage hostage = new Hostage();
-            hostage = getHostage();
+
+            Hostage hostage = getHostage();
             if ((player.getX() == points.get(1).x && player.getY() == points.get(1).y)
                     || (player.getX() == points.get(4).x && player.getY() == points.get(4).y) && hostage == null) {
                 if (player.getX() == points.get(1).x) {
@@ -141,20 +141,36 @@ public class ClientGui {
                 aimPoint = random.nextInt(15) + 1;
             }
         } else if (player.getTeam() == Team.Terrorists) {
-            Vector<Hostage> hostages = clientAplication.getHostages();
-            Hostage randomHostage = hostages.get(random.nextInt(hostages.size())); // TODO size of hostage may be 0
-            if (randomHostage.isTaken()) {
-                aimPoint = 15;
-            } else if (player.getX() != points.get(1).x && player.getY() != points.get(1).y
-                    && randomHostage.getY() == 30) {
-                aimPoint = 1;
-            } else if (player.getX() != points.get(4).x && player.getY() != points.get(4).y
-                    && randomHostage.getY() == 10)
-                aimPoint = 4;
-        } else {
-            aimPoint = random.nextInt(15) + 1;
-        }
-    }
+            Vector<Hostage> hostages = getHostages();
+            Vector<Hostage> hostages2 = clientAplication.getHostagesFromGE();
+            if(hostages.size() == 0 && hostages2.size() != 0){
+                if(player.getX() != points.get(1).x && player.getY() != points.get(1).y){
+                    aimPoint = 1;
+                }
+                else if(player.getX() != points.get(4).x && player.getY() != points.get(4).y){
+                    aimPoint = 4;
+                }
+                else {
+                    aimPoint = random.nextInt(2) == 0 ? 1 : 4;
+
+                }
+
+            }
+            else {
+                aimPoint = 15;// TODO size of hostage may be 0
+            }
+//            if (randomHostage.isTaken()) {
+//                aimPoint = 15;
+//            } else if (player.getX() != points.get(1).x && player.getY() != points.get(1).y
+//                    && randomHostage.getY() == 30) {
+//                aimPoint = 1;
+//            } else if (player.getX() != points.get(4).x && player.getY() != points.get(4).y
+//                    && randomHostage.getY() == 10)
+//                aimPoint = 4;
+//        } else {
+//            aimPoint = random.nextInt(15) + 1;
+//        }
+    }}
 
     private void makeMovePlayer() {
         if (player == null || player.getTeam() == null) {
@@ -352,8 +368,11 @@ public class ClientGui {
     }
 
     public Hostage getHostage() {
-        Hostage loh = clientAplication.getPlayer().getHostage();
         return clientAplication.getHostage();
+    }
+
+    public Vector<Hostage> getHostages() {
+        return clientAplication.getHostages();
     }
 
     public void setPlayer(Player player) {
