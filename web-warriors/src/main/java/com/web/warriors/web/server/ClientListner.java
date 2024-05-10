@@ -4,6 +4,7 @@ import java.io.ObjectInputStream;
 import java.util.Map;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -24,7 +25,7 @@ public class ClientListner implements Runnable {
             while (true) {
                 String message = objectIn.readObject().toString();
                 // System.out.println("Client sent: " + message);
-                if (handleMessage(message, id)) { // if true, break the loop
+                if (processMessage(message, id)) { // if command is "disconnect", break the loop
                     server.removeClient(id);
                     break;
                 }
@@ -37,24 +38,21 @@ public class ClientListner implements Runnable {
         }
     }
 
-    private boolean handleMessage(String message, int id) {
-        // TODO Auto-generated method stub
+    private boolean processMessage(String message, int id) {
         try {
-            Map<String, Object> data = mapper.readValue(message, Map.class);
+            Map<String, Object> data = mapper.readValue(message, new TypeReference<Map<String, Object>>() {
+            });
             String type = (String) data.get("type");
 
-            server.handleMessage(data, id);
+            server.processMessage(data, id);
             if (type.equals("disconnect"))
                 return true;
             else
                 return false;
 
-        } catch (
-        JsonMappingException e) {
-            // TODO Auto-generated catch block
+        } catch (JsonMappingException e) {
             e.printStackTrace();
         } catch (JsonProcessingException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 

@@ -65,6 +65,7 @@ public class Map extends JPanel {
 
         Hostage hostage = player.getHostage();
         if (hostage != null) {
+            // TODO change hostage painting to a different method
             g.setColor(Color.YELLOW);
             int radius = cellSize / 2;
 

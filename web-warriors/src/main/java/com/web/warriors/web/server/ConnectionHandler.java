@@ -7,7 +7,6 @@ import java.net.Socket;
 
 public class ConnectionHandler implements Runnable {
     private final Socket ClientSocket;
-    private final Server server;
     private final int id;
     private ObjectOutputStream outputStream;
     private ObjectInputStream inputStream;
@@ -15,7 +14,6 @@ public class ConnectionHandler implements Runnable {
 
     public ConnectionHandler(Socket ClientSocket, Server server, int id) {
         this.ClientSocket = ClientSocket;
-        this.server = server;
         this.id = id;
 
         try {

@@ -18,13 +18,13 @@ public class ServerGUI extends JFrame {
         setTitle("Server");
         setSize(400, 300);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setVisible(true);
+        // setVisible(true); // uncomment to see window with server clients
 
         serverClients = new ServerClients(this);
         add(serverClients);
 
         // create new window whitch will display game state
-        JFrame frame = new JFrame("Server");// Another example player
+        JFrame frame = new JFrame("Server");
         map = new Map(gameEngine);
 
         frame.add(map);

@@ -29,7 +29,8 @@ public class ServerListner implements Runnable {
                 // System.out.println("Server sent: " + message);
 
                 try {
-                    Map<String, Object> data = mapper.readValue(message, Map.class);
+                    Map<String, Object> data = mapper.readValue(message, new TypeReference<Map<String, Object>>() {
+                    });
                     String type = (String) data.get("type");
                     switch (type) {
                         case "set_id":
@@ -43,26 +44,28 @@ public class ServerListner implements Runnable {
                                     team = Team.CounterTerrorists;
                                     break;
                             }
-                            client.init(x,team);
+                            client.init(x, team);
                             break;
                         case "updates":
-                            List<Player> players = mapper.readValue(mapper.writeValueAsString(data.get("players")), new TypeReference<List<Player>>() {});
+                            List<Player> players = mapper.readValue(mapper.writeValueAsString(data.get("players")),
+                                    new TypeReference<List<Player>>() {
+                                    });
                             client.updatePlayers(players);
-                            List<Hostage> hostages = mapper.readValue(mapper.writeValueAsString(data.get("hostages")), new TypeReference<List<Hostage>>() {});
+                            List<Hostage> hostages = mapper.readValue(mapper.writeValueAsString(data.get("hostages")),
+                                    new TypeReference<List<Hostage>>() {
+                                    });
                             client.updateHostages(hostages);
                             break;
                         case "remove_player":
-                            client.removePlayer((int)data.get("id"));
+                            client.removePlayer((int) data.get("id"));
                             break;
                         default:
                             break;
                     }
 
                 } catch (JsonMappingException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 } catch (JsonProcessingException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
             }

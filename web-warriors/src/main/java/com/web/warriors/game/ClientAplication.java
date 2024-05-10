@@ -54,7 +54,6 @@ public class ClientAplication {
         try {
             return mapper.writeValueAsString(data);
         } catch (JsonProcessingException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         return null;

@@ -143,34 +143,34 @@ public class ClientGui {
         } else if (player.getTeam() == Team.Terrorists) {
             Vector<Hostage> hostages = getHostages();
             Vector<Hostage> hostages2 = clientAplication.getHostagesFromGE();
-            if(hostages.size() == 0 && hostages2.size() != 0){
-                if(player.getX() != points.get(1).x && player.getY() != points.get(1).y){
+            if (hostages.size() == 0 && hostages2.size() != 0) {
+                if (player.getX() != points.get(1).x && player.getY() != points.get(1).y) {
                     aimPoint = 1;
-                }
-                else if(player.getX() != points.get(4).x && player.getY() != points.get(4).y){
+                } else if (player.getX() != points.get(4).x && player.getY() != points.get(4).y) {
                     aimPoint = 4;
-                }
-                else {
+                } else {
                     aimPoint = random.nextInt(2) == 0 ? 1 : 4;
 
                 }
 
+            } else {
+                aimPoint = 15;
             }
-            else {
-                aimPoint = 15;// TODO size of hostage may be 0
-            }
-//            if (randomHostage.isTaken()) {
-//                aimPoint = 15;
-//            } else if (player.getX() != points.get(1).x && player.getY() != points.get(1).y
-//                    && randomHostage.getY() == 30) {
-//                aimPoint = 1;
-//            } else if (player.getX() != points.get(4).x && player.getY() != points.get(4).y
-//                    && randomHostage.getY() == 10)
-//                aimPoint = 4;
-//        } else {
-//            aimPoint = random.nextInt(15) + 1;
-//        }
-    }}
+            // if (randomHostage.isTaken()) {
+            // aimPoint = 15;
+            // } else if (player.getX() != points.get(1).x && player.getY() !=
+            // points.get(1).y
+            // && randomHostage.getY() == 30) {
+            // aimPoint = 1;
+            // } else if (player.getX() != points.get(4).x && player.getY() !=
+            // points.get(4).y
+            // && randomHostage.getY() == 10)
+            // aimPoint = 4;
+            // } else {
+            // aimPoint = random.nextInt(15) + 1;
+            // }
+        }
+    }
 
     private void makeMovePlayer() {
         if (player == null || player.getTeam() == null) {
@@ -202,52 +202,6 @@ public class ClientGui {
         deltaY = points.get(nextPoint).y - currentPosition.y;
         deltaX = deltaX == 0 ? 0 : deltaX / Math.abs(deltaX);
         deltaY = deltaY == 0 ? 0 : deltaY / Math.abs(deltaY);
-        player.move(player.getX() + deltaX, player.getY() + deltaY);
-
-    }
-
-    private void autoMovePlayer() {
-        if (player == null || player.getTeam() == null) {
-            // player = clientAplication.getPlayer();
-            return;
-        }
-        Random random = new Random();
-        Point currentPoint = new Point(player.getX(), player.getY());
-
-        if (currentPoint.equals(points.get(nextPoint))) {
-            int temp = random.nextInt(PointsNeighbors.get(nextPoint).size());
-            nextPoint = PointsNeighbors.get(nextPoint).get(temp);
-            player.setNextPoint(nextPoint);
-        }
-        int deltaX = 0, deltaY = 0;
-
-        deltaX = points.get(nextPoint).x - currentPoint.x;
-        deltaY = points.get(nextPoint).y - currentPoint.y;
-        deltaX = deltaX == 0 ? 0 : deltaX / Math.abs(deltaX);
-        deltaY = deltaY == 0 ? 0 : deltaY / Math.abs(deltaY);
-
-        player.move(player.getX() + deltaX, player.getY() + deltaY);
-    }
-
-    private void movePlayer() {
-        if (player == null) {
-            player = clientAplication.getPlayer();
-        }
-        int deltaX = 0;
-        int deltaY = 0;
-        if (isMovingLeft) {
-            deltaX--;
-        }
-        if (isMovingRight) {
-            deltaX++;
-        }
-
-        if (isMovingUp) {
-            deltaY--;
-        }
-        if (isMovingDown) {
-            deltaY++;
-        }
         player.move(player.getX() + deltaX, player.getY() + deltaY);
     }
 
@@ -314,7 +268,7 @@ public class ClientGui {
             currentNode = par.get(currentNode);
         }
 
-        if (path.size() < 2) // TODO fix path point
+        if (path.size() < 2)
             return 15;
 
         return path.get(path.size() - 2);
@@ -380,11 +334,9 @@ public class ClientGui {
         map.setUserPlayer(player);
         switch (player.getTeam()) {
             case CounterTerrorists:
-                // nextPoint = 15;
                 currentPoint = 15;
                 break;
             case Terrorists:
-
                 currentPoint = 3;
                 break;
             default:

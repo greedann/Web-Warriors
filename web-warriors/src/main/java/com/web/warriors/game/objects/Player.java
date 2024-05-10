@@ -1,6 +1,5 @@
 package com.web.warriors.game.objects;
 
-import java.awt.*;
 import java.io.Serializable;
 
 public class Player implements Serializable {

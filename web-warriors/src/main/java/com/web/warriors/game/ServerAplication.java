@@ -65,7 +65,7 @@ public class ServerAplication {
         sendToAll(data);
     }
 
-    public String dataToJson(Map<String, Object> data) {
+    public String dataToJson(Object data) {
         try {
             String json = mapper.writeValueAsString(data);
             return json;
@@ -75,17 +75,7 @@ public class ServerAplication {
         return null;
     }
 
-    public String dataToJson(Vector<Player> data) {
-        try {
-            String json = mapper.writeValueAsString(data);
-            return json;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    public void handleMessage(Map<String, Object> data, int id) {
+    public void processMessage(Map<String, Object> data, int id) {
         gameEngine.processMessage(data, id);
     }
 

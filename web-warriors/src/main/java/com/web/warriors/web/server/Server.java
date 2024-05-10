@@ -59,8 +59,8 @@ public class Server implements Runnable {
         aplication.removeClient(id);
     }
 
-    public void handleMessage(Map<String, Object> data, int id) {
-        aplication.handleMessage(data, id);
+    public void processMessage(Map<String, Object> data, int id) {
+        aplication.processMessage(data, id);
     }
 
     public void sendToAll(String message) {
