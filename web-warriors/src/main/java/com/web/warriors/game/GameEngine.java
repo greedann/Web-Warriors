@@ -4,9 +4,14 @@ import java.awt.*;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.web.warriors.game.objects.Hostage;
@@ -15,17 +20,18 @@ import com.web.warriors.game.objects.Team;
 import com.web.warriors.game.objects.Wall;
 
 public class GameEngine {
-    Vector<Player> players;
-    Vector<Hostage> hostages;
+    Collection<Player> players;
+    Collection<Hostage> hostages;
     Vector<Wall> walls;
     Vector<Point> hostagePoints;
     ObjectMapper mapper = new ObjectMapper();
     String currentDirectory = System.getProperty("user.dir") + "/web-warriors/src/main/resources";
     int terrorists = 0, counterTerrorists = 0, hostages_num = 0;
+    boolean isPaused = true;
 
     public GameEngine() {
-        players = new Vector<Player>();
-        hostages = new Vector<Hostage>();
+        players = new CopyOnWriteArrayList<>();
+        hostages = new CopyOnWriteArrayList<>();
         loadMapWalls();
         loadHostagePoints();
     }
@@ -39,11 +45,11 @@ public class GameEngine {
         return null;
     }
 
-    public Vector<Player> getPlayers() {
+    public Collection<Player> getPlayers() {
         return players;
     }
 
-    public Vector<Hostage> getHostages() {
+    public Collection<Hostage> getHostages() {
         return hostages;
     }
 
@@ -211,6 +217,8 @@ public class GameEngine {
         String type = (String) data.get("type");
         switch (type) {
             case "position":
+                if (isPaused)
+                    return;
                 int x = (int) data.get("x");
                 int y = (int) data.get("y");
                 double angle = (double) data.get("angle");
@@ -246,5 +254,19 @@ public class GameEngine {
             default:
                 break;
         }
+    }
+
+    public boolean isPaused() {
+        return isPaused;
+    }
+
+    public void pause() {
+        System.out.println("Pausing game");
+        isPaused = true;
+    }
+
+    public void resume() {
+        System.out.println("Resuming game");
+        isPaused = false;
     }
 }

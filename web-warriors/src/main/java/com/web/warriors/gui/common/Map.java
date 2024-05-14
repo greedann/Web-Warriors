@@ -7,6 +7,7 @@ import com.web.warriors.game.objects.Wall;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Collection;
 import java.util.TimerTask;
 import java.util.Vector;
 
@@ -15,9 +16,9 @@ public class Map extends JPanel {
     private final int MILLISECONDS_PER_TICK = 1000 / TICKS_PER_SECOND;
     private final int cellSize = 25; // Size of each cell in pixels
     private final int mapSize = 25; // Size of the map (10x10)
-    private Vector<Player> players = new Vector<>();
-    private Vector<Hostage> hostages = new Vector<>();
-    private Vector<Wall> walls = new Vector<>();
+    private Collection<Player> players;
+    private Collection<Hostage> hostages;
+    private Collection<Wall> walls;
     private Player player = null;
 
     public Map(GameEngine gameEngine) {
@@ -109,19 +110,15 @@ public class Map extends JPanel {
                     wall.getEnd_x() * cellSize / 6, wall.getEnd_y() * cellSize / 6);
         }
 
-        try {
-            for (Hostage hostage : hostages) {
-                // draw circle
-                g.setColor(Color.YELLOW);
+        for (Hostage hostage : hostages) {
+            // draw circle
+            g.setColor(Color.YELLOW);
 
-                int radius = cellSize / 2;
+            int radius = cellSize / 2;
 
-                int centerX = hostage.getX() * cellSize / 6 + radius;
-                int centerY = hostage.getY() * cellSize / 6 + radius;
-                g.fillOval(centerX - radius, centerY - radius, cellSize, cellSize);
-            }
-        } catch (java.util.ConcurrentModificationException e) {
-            // TODO: implement locks to hostages
+            int centerX = hostage.getX() * cellSize / 6 + radius;
+            int centerY = hostage.getY() * cellSize / 6 + radius;
+            g.fillOval(centerX - radius, centerY - radius, cellSize, cellSize);
         }
 
     }

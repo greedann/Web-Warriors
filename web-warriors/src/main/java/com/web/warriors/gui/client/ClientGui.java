@@ -19,6 +19,7 @@ import java.util.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.List;
+import java.util.Queue;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -141,8 +142,8 @@ public class ClientGui {
                 aimPoint = random.nextInt(15) + 1;
             }
         } else if (player.getTeam() == Team.Terrorists) {
-            Vector<Hostage> hostages = getHostages();
-            Vector<Hostage> hostages2 = clientAplication.getHostagesFromGE();
+            Collection<Hostage> hostages = getHostages();
+            Collection<Hostage> hostages2 = clientAplication.getHostagesFromGE();
             if (hostages.size() == 0 && hostages2.size() != 0) {
                 if (player.getX() != points.get(1).x && player.getY() != points.get(1).y) {
                     aimPoint = 1;
@@ -173,6 +174,9 @@ public class ClientGui {
     }
 
     private void makeMovePlayer() {
+        if (clientAplication.isPaused()) {
+            return;
+        }
         if (player == null || player.getTeam() == null) {
             player = clientAplication.getPlayer();
             return;
@@ -325,7 +329,7 @@ public class ClientGui {
         return clientAplication.getHostage();
     }
 
-    public Vector<Hostage> getHostages() {
+    public Collection<Hostage> getHostages() {
         return clientAplication.getHostages();
     }
 

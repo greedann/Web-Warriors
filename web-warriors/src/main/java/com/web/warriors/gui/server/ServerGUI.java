@@ -1,5 +1,10 @@
 package com.web.warriors.gui.server;
 
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+
 import javax.swing.JFrame;
 
 import com.web.warriors.game.GameEngine;
@@ -7,21 +12,15 @@ import com.web.warriors.game.ServerAplication;
 import com.web.warriors.gui.common.Map;
 import com.web.warriors.web.server.Server;
 
-public class ServerGUI extends JFrame {
+public class ServerGUI {
     private ServerAplication aplication;
     private ServerClients serverClients;
     private Map map;
 
-    public ServerGUI(Server server, GameEngine gameEngine) {
-        super("Server");
-
-        setTitle("Server");
-        setSize(400, 300);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        // setVisible(true); // uncomment to see window with server clients
+    public ServerGUI(Server server, GameEngine gameEngine, ServerAplication aplication) {
+        this.aplication = aplication;
 
         serverClients = new ServerClients(this);
-        add(serverClients);
 
         // create new window whitch will display game state
         JFrame frame = new JFrame("Server");
@@ -30,10 +29,40 @@ public class ServerGUI extends JFrame {
         frame.add(map);
         frame.setSize(625, 625);
         frame.pack();
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
+        frame.requestFocus();
         frame.repaint();
+
+        frame.addKeyListener(new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+            }
+        
+            @Override
+            public void keyReleased(KeyEvent e) {
+            }
+        
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_P) {
+                    if (gameEngine.isPaused()){
+                        aplication.resume();
+                    } else {
+                        aplication.pause();
+                    }
+                }
+            }
+        });
+
+        frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                aplication.exit();
+                frame.dispose();
+            }
+        });
 
     }
 

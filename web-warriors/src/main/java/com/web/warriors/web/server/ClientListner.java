@@ -30,6 +30,8 @@ public class ClientListner implements Runnable {
                     break;
                 }
             }
+        } catch (java.net.SocketException e) {
+            System.out.println("Socket in closed");
         } catch (Exception e) {
             e.printStackTrace();
             // disconnect client from server

@@ -2,10 +2,13 @@ package com.web.warriors.web.server;
 
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import javax.xml.crypto.Data;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.web.warriors.game.ServerAplication;
@@ -69,8 +72,22 @@ public class Server implements Runnable {
         }
     }
 
+    public void sendToAll(Map<String, Object> data) {
+        String json = aplication.dataToJson(data);
+        sendToAll(json);
+    }
+
     public void sendToOne(String message, int id) {
         ConnectionHandlers.get(id).send(message);
+    }
+
+    public void shutdown() {
+        Map<String, Object> data = new HashMap<>();
+        data.put("type", "shutdown");
+        sendToAll(data);
+        for (ConnectionHandler handler : ConnectionHandlers.values()) {
+            handler.close();
+        }
     }
 
 }

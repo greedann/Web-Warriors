@@ -10,6 +10,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.List;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.web.warriors.game.ClientAplication;
 import com.web.warriors.game.objects.Hostage;
@@ -70,18 +71,19 @@ public class Client implements Runnable {
         try {
             objectOut.writeObject(message);
             objectOut.flush();
+        } catch (java.net.SocketException e) {
+            System.out.println("Server disconnected");
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     public void sendToServer(Map<String, Object> data) {
+        String msg;
         try {
-            String msg = mapper.writeValueAsString(data);
-            // System.out.println(msg);
-            objectOut.writeObject(msg);
-            objectOut.flush();
-        } catch (Exception e) {
+            msg = mapper.writeValueAsString(data);
+            sendToServer(msg);
+        } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
     }
@@ -115,8 +117,13 @@ public class Client implements Runnable {
         data.put("type", "disconnect");
         sendToServer(data);
 
+        exit();
+    }
+
+    public void exit() {
         serverListner.stop();
         positionSender.cancel();
+        
 
         try {
             socket.close();
@@ -127,6 +134,14 @@ public class Client implements Runnable {
         // stop client thread
         Thread.currentThread().interrupt();
         System.out.println("Client disconnected");
+    }
+
+    public void pause() {
+        clientAplication.pause();
+    }
+
+    public void resume() {
+        clientAplication.resume();
     }
 
 }

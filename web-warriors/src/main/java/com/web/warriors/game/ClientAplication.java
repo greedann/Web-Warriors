@@ -1,9 +1,9 @@
 package com.web.warriors.game;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
-import java.util.Vector;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -94,6 +94,7 @@ public class ClientAplication {
             gameEngine.updatePlayer(p);
         }
     }
+
     public Hostage getHostage() {
         for (Player p : gameEngine.getPlayers()) {
             if (p.getId() == myPlayer.getId()) {
@@ -102,16 +103,8 @@ public class ClientAplication {
         }
         return null;
     }
-    public Vector<Hostage> getHostages() {
-        Vector <Hostage> hostages = new Vector<>();
-        for (Player p : gameEngine.getPlayers()) {
-            if(p.getHostage() != null) {
-                hostages.add(p.getHostage());
-            }
-        }
-        return hostages;
-    }
-    public Vector<Hostage> getHostagesFromGE() {
+
+    public Collection<Hostage> getHostagesFromGE() {
         return gameEngine.getHostages();
     }
 
@@ -121,6 +114,18 @@ public class ClientAplication {
 
     public void removePlayer(int id) {
         gameEngine.removePlayer(id);
+    }
+
+    public boolean isPaused() {
+        return gameEngine.isPaused();
+    }
+
+    public void pause() {
+        gameEngine.pause();
+    }
+
+    public void resume() {
+        gameEngine.resume();
     }
 
     public static void main(String[] args) {

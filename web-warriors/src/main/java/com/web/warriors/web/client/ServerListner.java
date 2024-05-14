@@ -59,6 +59,16 @@ public class ServerListner implements Runnable {
                         case "remove_player":
                             client.removePlayer((int) data.get("id"));
                             break;
+                        case "pause":
+                            client.pause();
+                            break;
+                        case "resume":
+                            client.resume();
+                            break;
+                        case "shutdown":
+                            client.pause();
+                            client.exit();
+                            break;
                         default:
                             break;
                     }
@@ -69,6 +79,10 @@ public class ServerListner implements Runnable {
                     e.printStackTrace();
                 }
             }
+        } catch (java.net.SocketException e) {
+            System.out.println("Socket in closed");
+        } catch (java.io.EOFException e) {
+            System.out.println("Server closed connection");
         } catch (Exception e) {
             e.printStackTrace();
         }

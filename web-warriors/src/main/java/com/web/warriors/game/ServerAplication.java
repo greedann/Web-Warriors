@@ -19,7 +19,7 @@ public class ServerAplication {
     public ServerAplication() {
         gameEngine = new GameEngine();
         server = new Server(this);
-        serverGUI = new ServerGUI(server, gameEngine);
+        serverGUI = new ServerGUI(server, gameEngine, this);
     }
 
     public void start() {
@@ -87,6 +87,25 @@ public class ServerAplication {
             data.put("hostages", gameEngine.getUpdatesHostages(player.getId()));
             sendToOne(data, player.getId());
         }
+    }
+
+    public void pause() {
+        gameEngine.pause();
+        Map<String, Object> data = new HashMap<>();
+        data.put("type", "pause");
+        sendToAll(data);
+    }
+
+    public void resume() {
+        gameEngine.resume();
+        Map<String, Object> data = new HashMap<>();
+        data.put("type", "resume");
+        sendToAll(data);
+    }
+
+    public void exit() {
+        server.shutdown();
+        System.exit(0);
     }
 
     public static void main(String[] args) {
