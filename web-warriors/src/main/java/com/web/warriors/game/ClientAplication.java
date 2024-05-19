@@ -104,6 +104,10 @@ public class ClientAplication {
         return null;
     }
 
+    public Collection<Player> getPlayers(){
+        return gameEngine.getPlayers();
+    }
+
     public Collection<Hostage> getHostagesFromGE() {
         return gameEngine.getHostages();
     }

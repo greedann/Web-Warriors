@@ -14,6 +14,26 @@ public class Player implements Serializable {
 
     private Integer nextPoint = null;
 
+    public Integer getCurrentPoint() {
+        return currentPoint;
+    }
+
+    public void setCurrentPoint(Integer currentPoint) {
+        this.currentPoint = currentPoint;
+    }
+
+    private Integer currentPoint = null;
+
+    public boolean isNeedHelp() {
+        return needHelp;
+    }
+
+    public void setNeedHelp(boolean needHelp) {
+        this.needHelp = needHelp;
+    }
+
+    private boolean needHelp = false;
+
     public Player(Player other) {
         name = other.name;
         score = other.score;

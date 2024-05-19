@@ -36,6 +36,7 @@ public class ClientGui {
     private boolean isMovingRight = false;
     private boolean isMovingUp = false;
     private boolean isMovingDown = false;
+    private Timer respawnTimer;
     Vector<Vector<Integer>> PointsNeighbors;
     List<List<Integer>> graph;
     Vector<Point> points;
@@ -44,6 +45,7 @@ public class ClientGui {
     private Integer aimPoint;
     private Integer currentPoint;
     private Timer autoMoveTimer;
+
 
     public ClientGui(ClientAplication clientAplication, GameEngine gameEngine) {
         this.clientAplication = clientAplication;
@@ -58,6 +60,7 @@ public class ClientGui {
         frame.setVisible(true);
         frame.requestFocus();
         autoMoveTimer = new Timer();
+        respawnTimer = new Timer();
         autoMoveTimer.schedule(new TimerTask() {
             @Override
             public void run() {
@@ -142,9 +145,10 @@ public class ClientGui {
                 aimPoint = random.nextInt(15) + 1;
             }
         } else if (player.getTeam() == Team.Terrorists) {
-            Collection<Hostage> hostages = getHostages();
-            Collection<Hostage> hostages2 = clientAplication.getHostagesFromGE();
-            if (hostages.size() == 0 && hostages2.size() != 0) {
+            //Collection<Hostage> hostages = getHostages();
+            //Collection<Hostage> hostages2 = clientAplication.getHostagesFromGE();
+            //if (hostages.size() == 0 && hostages2.size() != 0) {
+            if (!checkIfHostagePicked()){
                 if (player.getX() != points.get(1).x && player.getY() != points.get(1).y) {
                     aimPoint = 1;
                 } else if (player.getX() != points.get(4).x && player.getY() != points.get(4).y) {
@@ -182,22 +186,47 @@ public class ClientGui {
             return;
         }
 
+        if (ifSeeOpponent()){
+            System.out.println("See opponent");;
+            player.setNeedHelp(true);
+            System.out.println("Need help");
+//            printMyPosition();
+//            printPositionOthers();
+            if (!actionOnSeenOpponent()) {
+                System.out.println("Stay");
+                return;
+            }
+            System.out.println("Go");
+        }
+        else {
+            player.setNeedHelp(false);
+            System.out.println("Doesnt need help");
+            if(checkNeedHelp() != -1){
+                aimPoint = checkNeedHelp();
+                System.out.println("Helping to " + aimPoint);
+            }
+        }
         if (aimPoint == null) {
             logicMovement();
         }
         if (nextPoint == null) {
             nextPoint = findShortestWay(graph, currentPoint, aimPoint, PointsNeighbors.size());
+            player.setNextPoint(nextPoint);
         }
         Point currentPosition = new Point(player.getX(), player.getY());
         if (currentPosition.equals(points.get(aimPoint))) {
             currentPoint = aimPoint;
+            player.setCurrentPoint(currentPoint);
             nextPoint = null;
+
             aimPoint = null;
             return;
         }
         if (currentPosition.equals(points.get(nextPoint))) {
             currentPoint = nextPoint;
+            player.setCurrentPoint(currentPoint);
             nextPoint = null;
+            printPositionOthers();
             return;
         }
 
@@ -330,7 +359,15 @@ public class ClientGui {
     }
 
     public Collection<Hostage> getHostages() {
-        return clientAplication.getHostages();
+
+            Vector <Hostage> hostages = new Vector<>();
+            for (Player p : this.clientAplication.getPlayers()) {
+                if(p.getHostage() != null) {
+                    hostages.add(p.getHostage());
+                }
+            }
+            return hostages;
+
     }
 
     public void setPlayer(Player player) {
@@ -347,4 +384,108 @@ public class ClientGui {
                 break;
         }
     }
-}
+
+    public Boolean ifSeeOpponent(){
+        Collection<Player> allPlayers = clientAplication.getPlayers();
+        for (Player player1 : allPlayers){
+            if (player.getTeam() != player1.getTeam()) {
+                if(player1.getY() != -5){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    public void printPositionOthers(){
+        Collection<Player> allPlayers = clientAplication.getPlayers();
+        for (Player player1 : allPlayers){
+            if (!player1.equals(player)) {
+                System.out.println(player1.getX() + " " + player1.getY());
+            }
+        }
+    }
+
+    public Boolean actionOnSeenOpponent(){
+        //generate random number
+        Random random = new Random();
+        int chanceToBeKilled = random.nextInt(1000);
+        if(chanceToBeKilled > 990){
+            player.setPosition(-5, -5, 0);
+            player.move(-5, -5);
+            nextPoint = null;
+            scheduleRespawn();
+            System.out.println("Killed");
+            return false;
+        }
+        if (player.getTeam() == Team.CounterTerrorists){
+            if(player.getHostage() == null){
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        else {
+            if(checkIfHostagePicked()){
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+    }
+    public void printMyPosition(){
+        System.out.println("MY: " +player.getX() + " " + player.getY());
+    }
+
+    public Boolean checkIfHostagePicked(){
+        Collection<Hostage> hostages = getHostages();
+        Collection<Hostage> hostages2 = clientAplication.getHostagesFromGE();
+        if (hostages.size() == 0 && hostages2.size() != 0){
+            return false;
+        }
+        return true;
+    }
+    public void scheduleRespawn() {
+        respawnTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                respawn();
+            }
+        }, 5000);
+    }
+    public void respawn(){
+        //add time check 5 seconds
+
+        if (player.getTeam() == Team.CounterTerrorists){
+
+            player.move(95, 137);
+            currentPoint = 15;
+            player.setNextPoint(15);
+            nextPoint = null;
+            aimPoint = null;
+        }
+        else {
+            player.move(67, 39);
+            currentPoint = 3;
+            player.setNextPoint(3);
+            nextPoint = null;
+            aimPoint = null;
+        }
+    }
+
+    public Integer checkNeedHelp(){
+
+            Collection<Player> allPlayers = clientAplication.getPlayers();
+            for (Player player1 : allPlayers){
+                if (player.getTeam() == player1.getTeam()) {
+                    if(player1.isNeedHelp()){
+                        return player1.getNextPoint();
+                    }
+                }
+            }
+
+    return -1;
+
+
+}}
