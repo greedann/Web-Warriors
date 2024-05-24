@@ -106,6 +106,18 @@ public class Player implements Serializable {
         }
     }
 
+    public void move(int x, int y, double angle) {
+        if (x == -5 && y == -5) {
+            hide();
+            return;
+        }
+        if (x > 3 && x < 147 && y > 3 && y < 147) {
+            this.angle = angle;
+            this.x = x;
+            this.y = y;
+        }
+    }
+
     public boolean takeHostage(Hostage hostage) {
         if (team == Team.Terrorists)
             return false;
@@ -173,6 +185,10 @@ public class Player implements Serializable {
 
     public double getAngle() {
         return angle;
+    }
+
+    public void setAngle(double angle) {
+        this.angle = angle;
     }
 
     public void leaveHostage() {

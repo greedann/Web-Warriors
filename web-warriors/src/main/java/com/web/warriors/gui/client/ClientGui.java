@@ -45,7 +45,7 @@ public class ClientGui {
     private Integer aimPoint;
     private Integer currentPoint;
     private Timer autoMoveTimer;
-
+    private double angle;
 
     public ClientGui(ClientAplication clientAplication, GameEngine gameEngine) {
         this.clientAplication = clientAplication;
@@ -145,10 +145,10 @@ public class ClientGui {
                 aimPoint = random.nextInt(15) + 1;
             }
         } else if (player.getTeam() == Team.Terrorists) {
-            //Collection<Hostage> hostages = getHostages();
-            //Collection<Hostage> hostages2 = clientAplication.getHostagesFromGE();
-            //if (hostages.size() == 0 && hostages2.size() != 0) {
-            if (!checkIfHostagePicked()){
+            // Collection<Hostage> hostages = getHostages();
+            // Collection<Hostage> hostages2 = clientAplication.getHostagesFromGE();
+            // if (hostages.size() == 0 && hostages2.size() != 0) {
+            if (!checkIfHostagePicked()) {
                 if (player.getX() != points.get(1).x && player.getY() != points.get(1).y) {
                     aimPoint = 1;
                 } else if (player.getX() != points.get(4).x && player.getY() != points.get(4).y) {
@@ -186,22 +186,22 @@ public class ClientGui {
             return;
         }
 
-        if (ifSeeOpponent()){
-            System.out.println("See opponent");;
+        if (ifSeeOpponent()) {
+            System.out.println("See opponent");
+            ;
             player.setNeedHelp(true);
             System.out.println("Need help");
-//            printMyPosition();
-//            printPositionOthers();
+            // printMyPosition();
+            // printPositionOthers();
             if (!actionOnSeenOpponent()) {
                 System.out.println("Stay");
                 return;
             }
             System.out.println("Go");
-        }
-        else {
+        } else {
             player.setNeedHelp(false);
             System.out.println("Doesnt need help");
-            if(checkNeedHelp() != -1){
+            if (checkNeedHelp() != -1) {
                 aimPoint = checkNeedHelp();
                 System.out.println("Helping to " + aimPoint);
             }
@@ -235,7 +235,12 @@ public class ClientGui {
         deltaY = points.get(nextPoint).y - currentPosition.y;
         deltaX = deltaX == 0 ? 0 : deltaX / Math.abs(deltaX);
         deltaY = deltaY == 0 ? 0 : deltaY / Math.abs(deltaY);
-        player.move(player.getX() + deltaX, player.getY() + deltaY);
+        if (ifSeeOpponent()) {
+            player.move(player.getX() + deltaX, player.getY() + deltaY, angle);
+        }
+        else {
+            player.move(player.getX() + deltaX, player.getY() + deltaY);
+        }
     }
 
     static void bfs(List<List<Integer>> graph, int S,
@@ -360,13 +365,13 @@ public class ClientGui {
 
     public Collection<Hostage> getHostages() {
 
-            Vector <Hostage> hostages = new Vector<>();
-            for (Player p : this.clientAplication.getPlayers()) {
-                if(p.getHostage() != null) {
-                    hostages.add(p.getHostage());
-                }
+        Vector<Hostage> hostages = new Vector<>();
+        for (Player p : this.clientAplication.getPlayers()) {
+            if (p.getHostage() != null) {
+                hostages.add(p.getHostage());
             }
-            return hostages;
+        }
+        return hostages;
 
     }
 
@@ -385,31 +390,33 @@ public class ClientGui {
         }
     }
 
-    public Boolean ifSeeOpponent(){
+    public Boolean ifSeeOpponent() {
         Collection<Player> allPlayers = clientAplication.getPlayers();
-        for (Player player1 : allPlayers){
+        for (Player player1 : allPlayers) {
             if (player.getTeam() != player1.getTeam()) {
-                if(player1.getY() != -5){
+                if (player1.getY() != -5) {
+                    angle = Math.atan2(player.getX() - player1.getX(), player.getY() - player1.getY()) + (Math.PI / 2);
                     return true;
                 }
             }
         }
         return false;
     }
-    public void printPositionOthers(){
+
+    public void printPositionOthers() {
         Collection<Player> allPlayers = clientAplication.getPlayers();
-        for (Player player1 : allPlayers){
+        for (Player player1 : allPlayers) {
             if (!player1.equals(player)) {
                 System.out.println(player1.getX() + " " + player1.getY());
             }
         }
     }
 
-    public Boolean actionOnSeenOpponent(){
-        //generate random number
+    public Boolean actionOnSeenOpponent() {
+        // generate random number
         Random random = new Random();
         int chanceToBeKilled = random.nextInt(1000);
-        if(chanceToBeKilled > 990){
+        if (chanceToBeKilled > 990) {
             player.setPosition(-5, -5, 0);
             player.move(-5, -5);
             nextPoint = null;
@@ -417,35 +424,34 @@ public class ClientGui {
             System.out.println("Killed");
             return false;
         }
-        if (player.getTeam() == Team.CounterTerrorists){
-            if(player.getHostage() == null){
+        if (player.getTeam() == Team.CounterTerrorists) {
+            if (player.getHostage() == null) {
                 return true;
+            } else {
+                return false;
             }
-            else {
+        } else {
+            if (checkIfHostagePicked()) {
+                return true;
+            } else {
                 return false;
             }
         }
-        else {
-            if(checkIfHostagePicked()){
-                return true;
-            }
-            else {
-                return false;
-            }
-        }
-    }
-    public void printMyPosition(){
-        System.out.println("MY: " +player.getX() + " " + player.getY());
     }
 
-    public Boolean checkIfHostagePicked(){
+    public void printMyPosition() {
+        System.out.println("MY: " + player.getX() + " " + player.getY());
+    }
+
+    public Boolean checkIfHostagePicked() {
         Collection<Hostage> hostages = getHostages();
         Collection<Hostage> hostages2 = clientAplication.getHostagesFromGE();
-        if (hostages.size() == 0 && hostages2.size() != 0){
+        if (hostages.size() == 0 && hostages2.size() != 0) {
             return false;
         }
         return true;
     }
+
     public void scheduleRespawn() {
         respawnTimer.schedule(new TimerTask() {
             @Override
@@ -454,18 +460,18 @@ public class ClientGui {
             }
         }, 5000);
     }
-    public void respawn(){
-        //add time check 5 seconds
 
-        if (player.getTeam() == Team.CounterTerrorists){
+    public void respawn() {
+        // add time check 5 seconds
+
+        if (player.getTeam() == Team.CounterTerrorists) {
 
             player.move(95, 137);
             currentPoint = 15;
             player.setNextPoint(15);
             nextPoint = null;
             aimPoint = null;
-        }
-        else {
+        } else {
             player.move(67, 39);
             currentPoint = 3;
             player.setNextPoint(3);
@@ -474,18 +480,18 @@ public class ClientGui {
         }
     }
 
-    public Integer checkNeedHelp(){
+    public Integer checkNeedHelp() {
 
-            Collection<Player> allPlayers = clientAplication.getPlayers();
-            for (Player player1 : allPlayers){
-                if (player.getTeam() == player1.getTeam()) {
-                    if(player1.isNeedHelp()){
-                        return player1.getNextPoint();
-                    }
+        Collection<Player> allPlayers = clientAplication.getPlayers();
+        for (Player player1 : allPlayers) {
+            if (player.getTeam() == player1.getTeam()) {
+                if (player1.isNeedHelp()) {
+                    return player1.getNextPoint();
                 }
             }
+        }
 
-    return -1;
+        return -1;
 
-
-}}
+    }
+}

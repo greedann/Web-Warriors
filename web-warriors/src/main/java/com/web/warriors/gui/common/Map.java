@@ -53,8 +53,8 @@ public class Map extends JPanel {
         int centerY = player.getY() * cellSize / 6 + size;
 
         double angleRad = player.getAngle();
-        int x1 = centerX + (int) (size * Math.cos(angleRad));
-        int y1 = centerY - (int) (size * Math.sin(angleRad));
+        int x1 = centerX + (int) ((size+3) * Math.cos(angleRad));
+        int y1 = centerY - (int) ((size+3) * Math.sin(angleRad));
         int x2 = centerX + (int) (size * Math.cos(angleRad + 2 * Math.PI / 3));
         int y2 = centerY - (int) (size * Math.sin(angleRad + 2 * Math.PI / 3));
         int x3 = centerX + (int) (size * Math.cos(angleRad - 2 * Math.PI / 3));
