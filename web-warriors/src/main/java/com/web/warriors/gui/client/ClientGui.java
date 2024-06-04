@@ -3,9 +3,10 @@ package com.web.warriors.gui.client;
 import javax.swing.JFrame;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.web.warriors.game.ClientAplication;
+import com.web.warriors.game.ClientApplication;
 import com.web.warriors.game.GameEngine;
 import com.web.warriors.game.objects.Hostage;
+import com.web.warriors.game.objects.Message;
 import com.web.warriors.game.objects.Player;
 import com.web.warriors.game.objects.Team;
 import com.web.warriors.gui.common.Map;
@@ -26,7 +27,7 @@ import java.util.stream.Stream;
 public class ClientGui {
     private final int MOVES_PER_SECONDS = 20;
     private final int MILLISECONDS_PER_TICK = 1000 / MOVES_PER_SECONDS;
-    private ClientAplication clientAplication;
+    private ClientApplication clientApplication;
     private Map map;
     private Player player = null;
     ObjectMapper mapper = new ObjectMapper();
@@ -47,8 +48,8 @@ public class ClientGui {
     private Timer autoMoveTimer;
     private double angle;
 
-    public ClientGui(ClientAplication clientAplication, GameEngine gameEngine) {
-        this.clientAplication = clientAplication;
+    public ClientGui(ClientApplication clientApplication, GameEngine gameEngine) {
+        this.clientApplication = clientApplication;
         JFrame frame = new JFrame("Client");
         map = new Map(gameEngine);
         setPoints();
@@ -67,8 +68,8 @@ public class ClientGui {
                 makeMovePlayer();
                 // autoMovePlayer();
             }
-        }, 0, MILLISECONDS_PER_TICK);
-
+        }, 1000, MILLISECONDS_PER_TICK);
+        
         // real player
         // frame.addKeyListener(new KeyListener() {
         // @Override
@@ -115,7 +116,7 @@ public class ClientGui {
         frame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                clientAplication.exit();
+                clientApplication.exit();
                 frame.dispose();
             }
         });
@@ -137,7 +138,7 @@ public class ClientGui {
                     aimPoint = 1;
                 }
             } else if (hostage == null) {
-                // make random beween 2 numbers (1 or 4)
+                // make random between 2 numbers (1 or 4)
                 aimPoint = random.nextInt(2) == 0 ? 1 : 4;
             } else if (hostage != null) {
                 aimPoint = 15;
@@ -146,7 +147,7 @@ public class ClientGui {
             }
         } else if (player.getTeam() == Team.Terrorists) {
             // Collection<Hostage> hostages = getHostages();
-            // Collection<Hostage> hostages2 = clientAplication.getHostagesFromGE();
+            // Collection<Hostage> hostages2 = clientApplication.getHostagesFromGE();
             // if (hostages.size() == 0 && hostages2.size() != 0) {
             if (!checkIfHostagePicked()) {
                 if (player.getX() != points.get(1).x && player.getY() != points.get(1).y) {
@@ -177,18 +178,26 @@ public class ClientGui {
         }
     }
 
+    private void sendToTeam(Message message) {
+        for (Player player : clientApplication.getPlayers() ){
+            if (player.getTeam() == this.player.getTeam() && player.getId() != this.player.getId()){
+                message.addReceive(player.getId());
+            }
+        }
+        clientApplication.notifyTeam(message);
+    }
+
     private void makeMovePlayer() {
-        if (clientAplication.isPaused()) {
+        if (clientApplication.isPaused()) {
             return;
         }
         if (player == null || player.getTeam() == null) {
-            player = clientAplication.getPlayer();
+            player = clientApplication.getPlayer();
             return;
         }
 
         if (ifSeeOpponent()) {
             System.out.println("See opponent");
-            ;
             player.setNeedHelp(true);
             System.out.println("Need help");
             // printMyPosition();
@@ -200,7 +209,7 @@ public class ClientGui {
             System.out.println("Go");
         } else {
             player.setNeedHelp(false);
-            System.out.println("Doesnt need help");
+            System.out.println("Doesn't need help");
             if (checkNeedHelp() != -1) {
                 aimPoint = checkNeedHelp();
                 System.out.println("Helping to " + aimPoint);
@@ -360,13 +369,13 @@ public class ClientGui {
     }
 
     public Hostage getHostage() {
-        return clientAplication.getHostage();
+        return clientApplication.getHostage();
     }
 
     public Collection<Hostage> getHostages() {
 
         Vector<Hostage> hostages = new Vector<>();
-        for (Player p : this.clientAplication.getPlayers()) {
+        for (Player p : this.clientApplication.getPlayers()) {
             if (p.getHostage() != null) {
                 hostages.add(p.getHostage());
             }
@@ -391,7 +400,7 @@ public class ClientGui {
     }
 
     public Boolean ifSeeOpponent() {
-        Collection<Player> allPlayers = clientAplication.getPlayers();
+        Collection<Player> allPlayers = clientApplication.getPlayers();
         for (Player player1 : allPlayers) {
             if (player.getTeam() != player1.getTeam()) {
                 if (player1.getY() != -5) {
@@ -404,7 +413,7 @@ public class ClientGui {
     }
 
     public void printPositionOthers() {
-        Collection<Player> allPlayers = clientAplication.getPlayers();
+        Collection<Player> allPlayers = clientApplication.getPlayers();
         for (Player player1 : allPlayers) {
             if (!player1.equals(player)) {
                 System.out.println(player1.getX() + " " + player1.getY());
@@ -445,7 +454,7 @@ public class ClientGui {
 
     public Boolean checkIfHostagePicked() {
         Collection<Hostage> hostages = getHostages();
-        Collection<Hostage> hostages2 = clientAplication.getHostagesFromGE();
+        Collection<Hostage> hostages2 = clientApplication.getHostagesFromGE();
         if (hostages.size() == 0 && hostages2.size() != 0) {
             return false;
         }
@@ -482,7 +491,7 @@ public class ClientGui {
 
     public Integer checkNeedHelp() {
 
-        Collection<Player> allPlayers = clientAplication.getPlayers();
+        Collection<Player> allPlayers = clientApplication.getPlayers();
         for (Player player1 : allPlayers) {
             if (player.getTeam() == player1.getTeam()) {
                 if (player1.isNeedHelp()) {
@@ -493,5 +502,9 @@ public class ClientGui {
 
         return -1;
 
+    }
+
+    public void processTeamMessage(Message message) {
+        System.out.println("Message from team: " + message.getMessage());
     }
 }

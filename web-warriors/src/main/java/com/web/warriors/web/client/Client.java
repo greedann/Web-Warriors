@@ -12,8 +12,9 @@ import java.util.List;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.web.warriors.game.ClientAplication;
+import com.web.warriors.game.ClientApplication;
 import com.web.warriors.game.objects.Hostage;
+import com.web.warriors.game.objects.Message;
 import com.web.warriors.game.objects.Player;
 import com.web.warriors.game.objects.Team;
 
@@ -21,7 +22,7 @@ public class Client implements Runnable {
     private final int TICKS_PER_SECOND = 30;
     private final int MILLISECONDS_PER_TICK = 1000 / TICKS_PER_SECOND;
     private static int port = 8080;
-    private ClientAplication clientAplication;
+    private ClientApplication clientApplication;
     ObjectMapper mapper = new ObjectMapper();
     Timer positionSender = new Timer();
 
@@ -30,10 +31,10 @@ public class Client implements Runnable {
     ObjectOutputStream objectOut;
     InputStream in;
     ObjectInputStream objectIn;
-    ServerListner serverListner = null;
+    ServerListener serverListener = null;
 
-    public Client(ClientAplication clientAplication) {
-        this.clientAplication = clientAplication;
+    public Client(ClientApplication clientApplication) {
+        this.clientApplication = clientApplication;
     }
 
     @Override
@@ -46,8 +47,8 @@ public class Client implements Runnable {
             objectIn = new ObjectInputStream(in);
 
             System.out.println("Connected to server");
-            serverListner = new ServerListner(objectIn, this);
-            Thread thread = new Thread(serverListner);
+            serverListener = new ServerListener(objectIn, this);
+            Thread thread = new Thread(serverListener);
             thread.start();
             // connection established
 
@@ -55,7 +56,7 @@ public class Client implements Runnable {
             positionSender.schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    sendToServer(clientAplication.getPlayerPosJson());
+                    sendToServer(clientApplication.getPlayerPosJson());
                 }
             }, 0, MILLISECONDS_PER_TICK);
         } catch (Exception e) {
@@ -64,7 +65,6 @@ public class Client implements Runnable {
     }
 
     public void sendToServer(String message) {
-        // System.out.println(message);
         if (message == null) {
             return;
         }
@@ -89,27 +89,27 @@ public class Client implements Runnable {
     }
 
     public void init(int id, Team team) {
-        clientAplication.init(id, team);
+        clientApplication.init(id, team);
     }
 
     public void removePlayer(int id) {
-        clientAplication.removePlayer(id);
+        clientApplication.removePlayer(id);
     }
 
     public int getId() {
-        return clientAplication.getPlayer().getId();
+        return clientApplication.getPlayer().getId();
     }
 
     public void setTeam(Team team) {
-        clientAplication.setTeam(team);
+        clientApplication.setTeam(team);
     }
 
     public void updatePlayers(List<Player> players) {
-        clientAplication.updatePlayers(players);
+        clientApplication.updatePlayers(players);
     }
 
     public void updateHostages(List<Hostage> hostages) {
-        clientAplication.updateHostages(hostages);
+        clientApplication.updateHostages(hostages);
     }
 
     public void disconnect() {
@@ -121,7 +121,7 @@ public class Client implements Runnable {
     }
 
     public void exit() {
-        serverListner.stop();
+        serverListener.stop();
         positionSender.cancel();
         
 
@@ -137,11 +137,15 @@ public class Client implements Runnable {
     }
 
     public void pause() {
-        clientAplication.pause();
+        clientApplication.pause();
     }
 
     public void resume() {
-        clientAplication.resume();
+        clientApplication.resume();
+    }
+
+    public void processTeamMessage(Message message) {
+        clientApplication.processTeamMessage(message);
     }
 
 }

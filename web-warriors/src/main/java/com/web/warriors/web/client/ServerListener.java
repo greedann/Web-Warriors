@@ -8,16 +8,17 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.web.warriors.game.objects.Hostage;
+import com.web.warriors.game.objects.Message;
 import com.web.warriors.game.objects.Player;
 import com.web.warriors.game.objects.Team;
 import java.util.List;
 
-public class ServerListner implements Runnable {
+public class ServerListener implements Runnable {
     ObjectInputStream objectIn;
     Client client;
     ObjectMapper mapper = new ObjectMapper();
 
-    public ServerListner(ObjectInputStream objectIn, Client client) {
+    public ServerListener(ObjectInputStream objectIn, Client client) {
         this.objectIn = objectIn;
         this.client = client;
     }
@@ -69,8 +70,17 @@ public class ServerListner implements Runnable {
                             client.pause();
                             client.exit();
                             break;
-                        default:
+                        case "message":
+                            try {
+                                String msg = mapper.writeValueAsString(data.get("message"));
+                                Message msg1 = mapper.readValue(msg, new TypeReference<Message>() {});
+                                System.out.println(msg1);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
                             break;
+                        default:
+                            System.out.println("Unknown message type: " + type);
                     }
 
                 } catch (JsonMappingException e) {

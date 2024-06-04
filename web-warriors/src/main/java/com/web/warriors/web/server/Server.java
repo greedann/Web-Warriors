@@ -11,19 +11,22 @@ import java.util.TimerTask;
 import javax.xml.crypto.Data;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.web.warriors.game.ServerAplication;
+import com.web.warriors.game.ServerApplication;
+import com.web.warriors.game.objects.Message;
+
+import com.fasterxml.jackson.core.type.TypeReference;
 
 public class Server implements Runnable {
     private final int TICKS_PER_SECOND = 30;
     private final int MILLISECONDS_PER_TICK = 1000 / TICKS_PER_SECOND;
     static int port = 8080;
     private Hashtable<Integer, ConnectionHandler> ConnectionHandlers = new Hashtable<Integer, ConnectionHandler>();
-    private ServerAplication aplication;
+    private ServerApplication application;
     ObjectMapper mapper = new ObjectMapper();
     Timer playersSender = new Timer();
 
-    public Server(ServerAplication aplication) {
-        this.aplication = aplication;
+    public Server(ServerApplication application) {
+        this.application = application;
     }
 
     @Override
@@ -33,7 +36,7 @@ public class Server implements Runnable {
             playersSender.schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    aplication.sendUpdates();
+                    application.sendUpdates();
                 }
             }, 0, MILLISECONDS_PER_TICK);
             while (true) {
@@ -53,17 +56,30 @@ public class Server implements Runnable {
     }
 
     public void addClient(int id) {
-        aplication.addClient(id);
+        application.addClient(id);
     }
 
     public void removeClient(int id) {
         ConnectionHandlers.get(id).close();
         ConnectionHandlers.remove(id);
-        aplication.removeClient(id);
+        application.removeClient(id);
     }
 
     public void processMessage(Map<String, Object> data, int id) {
-        aplication.processMessage(data, id);
+        String type = (String) data.get("type");
+        if (type.equals("message")) {
+            try {
+                String msg = mapper.writeValueAsString(data.get("message"));
+                Message message = mapper.readValue(msg, new TypeReference<Message>() {});
+                for (Integer to_id : message.getReceives()) {
+                    sendToOne(mapper.writeValueAsString(data), to_id);
+                };
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            application.processMessage(data, id);
+        }
     }
 
     public void sendToAll(String message) {
@@ -73,7 +89,7 @@ public class Server implements Runnable {
     }
 
     public void sendToAll(Map<String, Object> data) {
-        String json = aplication.dataToJson(data);
+        String json = application.dataToJson(data);
         sendToAll(json);
     }
 

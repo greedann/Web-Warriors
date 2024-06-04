@@ -10,7 +10,7 @@ public class ConnectionHandler implements Runnable {
     private final int id;
     private ObjectOutputStream outputStream;
     private ObjectInputStream inputStream;
-    private ClientListner clientListner;
+    private ClientListener clientListener;
 
     public ConnectionHandler(Socket ClientSocket, Server server, int id) {
         this.ClientSocket = ClientSocket;
@@ -19,7 +19,7 @@ public class ConnectionHandler implements Runnable {
         try {
             this.outputStream = new ObjectOutputStream(this.ClientSocket.getOutputStream());
             this.inputStream = new ObjectInputStream(this.ClientSocket.getInputStream());
-            this.clientListner = new ClientListner(inputStream, server, id);
+            this.clientListener = new ClientListener(inputStream, server, id);
         } catch (final IOException e) {
             e.printStackTrace();
         }
@@ -29,7 +29,7 @@ public class ConnectionHandler implements Runnable {
         try {
             System.out.println("Connection established with client " + id);
 
-            Thread thread = new Thread(clientListner);
+            Thread thread = new Thread(clientListener);
             thread.start();
 
         } catch (Exception e) {

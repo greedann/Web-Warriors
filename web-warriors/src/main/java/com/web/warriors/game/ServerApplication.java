@@ -10,13 +10,13 @@ import com.web.warriors.game.objects.Team;
 import com.web.warriors.gui.server.ServerGUI;
 import com.web.warriors.web.server.Server;
 
-public class ServerAplication {
+public class ServerApplication {
     GameEngine gameEngine;
     Server server;
     ServerGUI serverGUI;
     ObjectMapper mapper = new ObjectMapper();
 
-    public ServerAplication() {
+    public ServerApplication() {
         gameEngine = new GameEngine();
         server = new Server(this);
         serverGUI = new ServerGUI(server, gameEngine, this);
@@ -109,7 +109,7 @@ public class ServerAplication {
     }
 
     public static void main(String[] args) {
-        ServerAplication serverAplication = new ServerAplication();
-        serverAplication.start();
+        ServerApplication serverApplication = new ServerApplication();
+        serverApplication.start();
     }
 }

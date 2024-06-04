@@ -8,19 +8,20 @@ import java.util.List;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.web.warriors.game.objects.Hostage;
+import com.web.warriors.game.objects.Message;
 import com.web.warriors.game.objects.Player;
 import com.web.warriors.game.objects.Team;
 import com.web.warriors.gui.client.ClientGui;
 import com.web.warriors.web.client.Client;
 
-public class ClientAplication {
+public class ClientApplication {
     GameEngine gameEngine;
     Client client;
     ClientGui clientGui;
     Player myPlayer = null;
     ObjectMapper mapper = new ObjectMapper();
 
-    public ClientAplication() {
+    public ClientApplication() {
         gameEngine = new GameEngine();
         client = new Client(this);
         clientGui = new ClientGui(this, gameEngine);
@@ -132,8 +133,23 @@ public class ClientAplication {
         gameEngine.resume();
     }
 
+    public void notifyTeam(Message message) {
+        if (myPlayer == null) {
+            return;
+        }
+        Map<String, Object> data = new HashMap<>();
+        data.put("type", "message");
+        data.put("message", message);
+        data.put("team", myPlayer.getTeam().toString());
+        client.sendToServer(data);
+    }
+
+    public void processTeamMessage(Message message) {
+        clientGui.processTeamMessage(message);
+    }
+
     public static void main(String[] args) {
-        ClientAplication clientAplication = new ClientAplication();
-        clientAplication.start();
+        ClientApplication clientApplication = new ClientApplication();
+        clientApplication.start();
     }
 }
