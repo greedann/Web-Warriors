@@ -7,6 +7,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.web.warriors.game.objects.Bullet;
 import com.web.warriors.game.objects.Hostage;
 import com.web.warriors.game.objects.Message;
 import com.web.warriors.game.objects.Player;
@@ -105,7 +106,7 @@ public class ClientApplication {
         return null;
     }
 
-    public Collection<Player> getPlayers(){
+    public Collection<Player> getPlayers() {
         return gameEngine.getPlayers();
     }
 
@@ -146,6 +147,20 @@ public class ClientApplication {
 
     public void processTeamMessage(Message message) {
         clientGui.processTeamMessage(message);
+    }
+
+    public void shoot(Player player) {
+        Double angle = player.getAngle() + (Math.random() * 0.1 - 0.05);
+        Bullet bullet = new Bullet(player.getX() + 4, player.getY() + 2, angle, player.getTeam());
+        gameEngine.addBullet(bullet);
+        Map<String, Object> data = new HashMap<>();
+        data.put("type", "shoot");
+        data.put("bullet", bullet);
+        client.sendToServer(data);
+    }
+
+    public void processMessage(Map<String, Object> data, int id) {
+        gameEngine.processMessage(data, id);
     }
 
     public static void main(String[] args) {

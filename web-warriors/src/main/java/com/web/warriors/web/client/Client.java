@@ -148,4 +148,8 @@ public class Client implements Runnable {
         clientApplication.processTeamMessage(message);
     }
 
+    public void processMessage(Map<String, Object> data, int id) {
+        clientApplication.processMessage(data, id);
+    }
+
 }

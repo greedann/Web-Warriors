@@ -74,10 +74,14 @@ public class ServerListener implements Runnable {
                             try {
                                 String msg = mapper.writeValueAsString(data.get("message"));
                                 Message msg1 = mapper.readValue(msg, new TypeReference<Message>() {});
-                                System.out.println(msg1);
+                                client.processTeamMessage(msg1);
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
+                            break;
+
+                        case "shoot":
+                            client.processMessage(data, client.getId());
                             break;
                         default:
                             System.out.println("Unknown message type: " + type);

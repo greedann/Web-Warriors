@@ -7,6 +7,7 @@ import java.util.Hashtable;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.Vector;
 
 import javax.xml.crypto.Data;
 
@@ -95,6 +96,15 @@ public class Server implements Runnable {
 
     public void sendToOne(String message, int id) {
         ConnectionHandlers.get(id).send(message);
+    }
+
+    public void recastToAllExcept(String message, int id) {
+        Vector<Integer> recipients = application.getWhoCanSee(id);
+        for (Integer recipient : recipients) {
+            if (recipient != id) {
+                sendToOne(message, recipient);
+            }
+        }
     }
 
     public void shutdown() {

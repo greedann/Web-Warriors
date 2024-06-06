@@ -1,6 +1,7 @@
 package com.web.warriors.gui.common;
 
 import com.web.warriors.game.GameEngine;
+import com.web.warriors.game.objects.Bullet;
 import com.web.warriors.game.objects.Hostage;
 import com.web.warriors.game.objects.Player;
 import com.web.warriors.game.objects.Wall;
@@ -18,6 +19,7 @@ public class Map extends JPanel {
     private final int mapSize = 25; // Size of the map (10x10)
     private Collection<Player> players;
     private Collection<Hostage> hostages;
+    private Collection<Bullet> bullets;
     private Collection<Wall> walls;
     private Player player = null;
 
@@ -28,6 +30,7 @@ public class Map extends JPanel {
         this.players = gameEngine.getPlayers();
         this.walls = gameEngine.getWalls();
         this.hostages = gameEngine.getHostages();
+        this.bullets = gameEngine.getBullets();
 
         // addKeyListener(this);
 
@@ -53,8 +56,8 @@ public class Map extends JPanel {
         int centerY = player.getY() * cellSize / 6 + size;
 
         double angleRad = player.getAngle();
-        int x1 = centerX + (int) ((size+3) * Math.cos(angleRad));
-        int y1 = centerY - (int) ((size+3) * Math.sin(angleRad));
+        int x1 = centerX + (int) ((size + 3) * Math.cos(angleRad));
+        int y1 = centerY - (int) ((size + 3) * Math.sin(angleRad));
         int x2 = centerX + (int) (size * Math.cos(angleRad + 2 * Math.PI / 3));
         int y2 = centerY - (int) (size * Math.sin(angleRad + 2 * Math.PI / 3));
         int x3 = centerX + (int) (size * Math.cos(angleRad - 2 * Math.PI / 3));
@@ -82,15 +85,20 @@ public class Map extends JPanel {
 
         for (Player player : players) {
             Color playerColor = Color.BLACK;
-            switch (player.getTeam()) {
-                case CounterTerrorists:
-                    playerColor = Color.BLUE;
-                    break;
-                case Terrorists:
-                    playerColor = Color.RED;
-                    break;
-                default:
-                    g.setColor(Color.GREEN);
+            if (player.isAlive()) {
+                switch (player.getTeam()) {
+                    case CounterTerrorists:
+                        playerColor = Color.BLUE;
+                        break;
+                    case Terrorists:
+                        playerColor = Color.RED;
+                        break;
+                    default:
+                        g.setColor(Color.GREEN);
+                }
+            }
+            else {
+                playerColor = Color.GRAY;
             }
             if (player != null && player == this.player) {
                 paintPlayer(g, player, cellSize / 2 + 2, Color.black);
@@ -119,6 +127,13 @@ public class Map extends JPanel {
             int centerX = hostage.getX() * cellSize / 6 + radius;
             int centerY = hostage.getY() * cellSize / 6 + radius;
             g.fillOval(centerX - radius, centerY - radius, cellSize, cellSize);
+        }
+
+        for (Bullet bullet : bullets) {
+            g.setColor(Color.RED);
+            int x = bullet.getX() * cellSize / 6;
+            int y = bullet.getY() * cellSize / 6;
+            g.fillOval(x, y, 5, 5);
         }
 
     }

@@ -10,18 +10,25 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.Vector;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.web.warriors.game.objects.Hostage;
+import com.web.warriors.game.objects.Message;
 import com.web.warriors.game.objects.Player;
 import com.web.warriors.game.objects.Team;
 import com.web.warriors.game.objects.Wall;
+import com.web.warriors.game.objects.Bullet;
 
 public class GameEngine {
     Collection<Player> players;
     Collection<Hostage> hostages;
+    Collection<Bullet> bullets;
     Vector<Wall> walls;
     Vector<Point> hostagePoints;
     ObjectMapper mapper = new ObjectMapper();
@@ -32,8 +39,16 @@ public class GameEngine {
     public GameEngine() {
         players = new CopyOnWriteArrayList<>();
         hostages = new CopyOnWriteArrayList<>();
+        bullets = new CopyOnWriteArrayList<>();
         loadMapWalls();
         loadHostagePoints();
+        Timer bulletsTimer = new Timer();
+        bulletsTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                moveBullets();
+            }
+        }, 1000, 1000 / 30);
     }
 
     public Player getPlayer(int id) {
@@ -53,6 +68,10 @@ public class GameEngine {
         return hostages;
     }
 
+    public Collection<Bullet> getBullets() {
+        return bullets;
+    }
+
     public void addHostage() {
         Point point = new Point(hostagePoints.get(hostages_num % 4 + 1));
         Hostage newHostage = new Hostage(hostages_num++, (int) point.getX(), (int) point.getY());
@@ -61,6 +80,14 @@ public class GameEngine {
 
     public void addWall(Wall wall) {
         walls.add(wall);
+    }
+
+    public void addBullet(Bullet bullet) {
+        bullets.add(bullet);
+    }
+
+    public void removeBullet(Bullet bullet) {
+        bullets.remove(bullet);
     }
 
     public void setWalls(Vector<Wall> walls) {
@@ -251,7 +278,22 @@ public class GameEngine {
                 removePlayer(id);
                 break;
 
+            case "shoot":
+                if (isPaused)
+                    return;
+                String bullet_str;
+                try {
+                    bullet_str = mapper.writeValueAsString(data.get("bullet"));
+                    Bullet bullet = mapper.readValue(bullet_str, new TypeReference<Bullet>() {
+                    });
+                    addBullet(bullet);
+                } catch (JsonProcessingException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                break;
             default:
+                System.out.println("Unknown message type: " + type);
                 break;
         }
     }
@@ -268,5 +310,41 @@ public class GameEngine {
     public void resume() {
         System.out.println("Resuming game");
         isPaused = false;
+    }
+
+    public void moveBullets() {
+        for (Bullet bullet : bullets) {
+            bullet.move();
+            if (bullet.isOutOfBounds() || bullet.isColliding(walls)) {
+                bullets.remove(bullet);
+                continue;
+            }
+            for (Player player : players) {
+                if (!player.isAlive())
+                    continue;
+                if (player.getTeam() == bullet.getTeam())
+                    continue;
+                if (bullet.isColliding(player)) {
+                    System.out.println("Player " + player.getId() + " was shot");
+                    bullets.remove(bullet);
+                    player.die();
+                    break;
+                }
+            }
+        }
+    }
+
+    public Vector<Integer> getWhoCanSee(int id) {
+        Player player = getPlayer(id);
+        Vector<Integer> whoCanSee = new Vector<>();
+        for (Player p : players) {
+            if (p.getId() == id)
+                continue;
+            if (p.getTeam() == player.getTeam())
+                whoCanSee.add(p.getId());
+            else if (!isWallBetween(p.getX(), p.getY(), player.getX(), player.getY()))
+                whoCanSee.add(p.getId());
+        }
+        return whoCanSee;
     }
 }

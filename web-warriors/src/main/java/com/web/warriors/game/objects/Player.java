@@ -1,6 +1,10 @@
 package com.web.warriors.game.objects;
 
 import java.io.Serializable;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class Player implements Serializable {
     private String name;
@@ -11,27 +15,9 @@ public class Player implements Serializable {
     private Team team;
     private double angle;
     private Hostage hostage = null;
-
-    private Integer nextPoint = null;
-
-    public Integer getCurrentPoint() {
-        return currentPoint;
-    }
-
-    public void setCurrentPoint(Integer currentPoint) {
-        this.currentPoint = currentPoint;
-    }
-
+    private boolean isAlive;
     private Integer currentPoint = null;
-
-    public boolean isNeedHelp() {
-        return needHelp;
-    }
-
-    public void setNeedHelp(boolean needHelp) {
-        this.needHelp = needHelp;
-    }
-
+    private Integer nextPoint = null;
     private boolean needHelp = false;
 
     public Player(Player other) {
@@ -42,6 +28,7 @@ public class Player implements Serializable {
         y = other.y;
         team = other.team;
         nextPoint = other.nextPoint;
+        isAlive = other.isAlive;
     }
 
     public Player() {
@@ -53,6 +40,7 @@ public class Player implements Serializable {
         this.team = Team.NONE;
         this.angle = 0;
         this.nextPoint = 1;
+        this.isAlive = true;
     }
 
     public Player(String name, int id) {
@@ -64,6 +52,7 @@ public class Player implements Serializable {
         this.team = Team.NONE;
         this.angle = 0;
         this.nextPoint = 1;
+        this.isAlive = true;
     }
 
     public Player(String name, int id, Team team) {
@@ -73,6 +62,7 @@ public class Player implements Serializable {
         this.team = team;
         this.angle = 0;
         this.nextPoint = 1;
+        this.isAlive = true;
         switch (team) {
             case CounterTerrorists:
                 x = 95;
@@ -84,6 +74,31 @@ public class Player implements Serializable {
             default:
                 break;
         }
+    }
+
+    public Integer getCurrentPoint() {
+        return currentPoint;
+    }
+
+    @JsonIgnore
+    public boolean isAlive() {
+        return isAlive;
+    }
+
+    public void setIsAlive(boolean isAlive) {
+        this.isAlive = isAlive;
+    }
+
+    public void setCurrentPoint(Integer currentPoint) {
+        this.currentPoint = currentPoint;
+    }
+
+    public boolean isNeedHelp() {
+        return needHelp;
+    }
+
+    public void setNeedHelp(boolean needHelp) {
+        this.needHelp = needHelp;
     }
 
     public int getNextPoint() {
@@ -107,6 +122,9 @@ public class Player implements Serializable {
     }
 
     public void move(int x, int y, double angle) {
+        if (!isAlive) {
+            return;
+        }
         if (x == -5 && y == -5) {
             hide();
             return;
@@ -137,6 +155,9 @@ public class Player implements Serializable {
     }
 
     public void setPosition(int x, int y, double angle) {
+        if (!isAlive) {
+            return;
+        }
         this.x = x;
         this.y = y;
         this.angle = angle;
@@ -194,6 +215,27 @@ public class Player implements Serializable {
     public void leaveHostage() {
         this.hostage = null;
         this.score += 50;
+    }
+
+    public void die() {
+        this.isAlive = false;
+        Timer respawnTimer = new Timer();
+        TimerTask respawnTask = new TimerTask() {
+            @Override
+            public void run() {
+                isAlive = true;
+                if (team == Team.CounterTerrorists) {
+                    move(95, 137);
+                    currentPoint = 15;
+                    nextPoint = 15;
+                } else {
+                    move(67, 39);
+                    currentPoint = 3;
+                    nextPoint = 3;
+                }
+            }
+        };
+        respawnTimer.schedule(respawnTask, 5000);
     }
 
     @Override

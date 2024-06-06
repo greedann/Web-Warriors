@@ -36,7 +36,7 @@ public class ClientListener implements Runnable {
         } catch (UTFDataFormatException e) {
             System.out.println("UTFDataFormatException");
             System.err.println("Error reading UTF-8 data: " + e.getMessage());
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             // disconnect client from server
             server.removeClient(id);
@@ -48,6 +48,8 @@ public class ClientListener implements Runnable {
             Map<String, Object> data = mapper.readValue(message, new TypeReference<Map<String, Object>>() {
             });
             String type = (String) data.get("type");
+            if (type.equals("shoot"))
+                server.recastToAllExcept(message, id);
             server.processMessage(data, id);
             if (type.equals("disconnect"))
                 return true;

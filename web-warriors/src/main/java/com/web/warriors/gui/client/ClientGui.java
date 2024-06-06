@@ -423,16 +423,6 @@ public class ClientGui {
 
     public Boolean actionOnSeenOpponent() {
         // generate random number
-        Random random = new Random();
-        int chanceToBeKilled = random.nextInt(1000);
-        if (chanceToBeKilled > 990) {
-            player.setPosition(-5, -5, 0);
-            player.move(-5, -5);
-            nextPoint = null;
-            scheduleRespawn();
-            System.out.println("Killed");
-            return false;
-        }
         if (player.getTeam() == Team.CounterTerrorists) {
             if (player.getHostage() == null) {
                 return true;

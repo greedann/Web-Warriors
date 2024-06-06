@@ -108,6 +108,10 @@ public class ServerApplication {
         System.exit(0);
     }
 
+    public Vector<Integer> getWhoCanSee(int id) {
+        return gameEngine.getWhoCanSee(id);
+    }
+
     public static void main(String[] args) {
         ServerApplication serverApplication = new ServerApplication();
         serverApplication.start();
