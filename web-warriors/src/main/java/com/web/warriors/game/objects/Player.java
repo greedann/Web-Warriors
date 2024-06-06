@@ -1,6 +1,7 @@
 package com.web.warriors.game.objects;
 
 import java.io.Serializable;
+import java.util.*;
 
 public class Player implements Serializable {
     private String name;
@@ -73,13 +74,15 @@ public class Player implements Serializable {
         this.team = team;
         this.angle = 0;
         this.nextPoint = 1;
+        Random random = new Random();
+
         switch (team) {
             case CounterTerrorists:
-                x = 95;
+                x = 78+random.nextInt(8);
                 y = 137;
                 break;
             case Terrorists:
-                x = 67;
+                x = 61+ random.nextInt(8);
                 y = 39;
             default:
                 break;
