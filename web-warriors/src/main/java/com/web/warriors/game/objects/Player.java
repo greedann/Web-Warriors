@@ -3,6 +3,7 @@ package com.web.warriors.game.objects;
 import java.io.Serializable;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.*;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -63,13 +64,15 @@ public class Player implements Serializable {
         this.angle = 0;
         this.nextPoint = 1;
         this.isAlive = true;
+        Random random = new Random();
+
         switch (team) {
             case CounterTerrorists:
-                x = 95;
+                x = 78+random.nextInt(8);
                 y = 137;
                 break;
             case Terrorists:
-                x = 67;
+                x = 61+ random.nextInt(8);
                 y = 39;
             default:
                 break;

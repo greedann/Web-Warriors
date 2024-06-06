@@ -15,6 +15,7 @@ import java.awt.*;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.sql.SQLOutput;
 import java.util.*;
 
 import java.awt.event.WindowAdapter;
@@ -45,6 +46,9 @@ public class ClientGui {
     private Integer nextPoint;
     private Integer aimPoint;
     private Integer currentPoint;
+    private boolean seeOpponent = false;
+
+    private int aimHostage = 1;
     private Timer autoMoveTimer;
     private double angle;
 
@@ -130,6 +134,14 @@ public class ClientGui {
         if (player.getTeam() == Team.CounterTerrorists) {
 
             Hostage hostage = getHostage();
+
+            if(hostage != null){
+                aimPoint = 15;
+                sendToTeam(new Message("hostage_aim", String.valueOf(aimPoint),"-" ));
+                System.out.println("Take hostage");
+                return;
+            }
+
             if ((player.getX() == points.get(1).x && player.getY() == points.get(1).y)
                     || (player.getX() == points.get(4).x && player.getY() == points.get(4).y) && hostage == null) {
                 if (player.getX() == points.get(1).x) {
@@ -137,11 +149,14 @@ public class ClientGui {
                 } else {
                     aimPoint = 1;
                 }
+                sendToTeam(new Message("hostage_aim", String.valueOf(aimPoint),"-" ));
             } else if (hostage == null) {
                 // make random between 2 numbers (1 or 4)
                 aimPoint = random.nextInt(2) == 0 ? 1 : 4;
+
             } else if (hostage != null) {
                 aimPoint = 15;
+                sendToTeam(new Message("hostage_aim", String.valueOf(aimPoint),"-" ));
             } else { // TODO fix unreached code
                 aimPoint = random.nextInt(15) + 1;
             }
@@ -197,23 +212,31 @@ public class ClientGui {
         }
 
         if (ifSeeOpponent()) {
-            System.out.println("See opponent");
-            player.setNeedHelp(true);
-            System.out.println("Need help");
+            player.move(player.getX(), player.getY() , angle);
+            //System.out.println("See opponent");
+            if(seeOpponent == false){
+                if(nextPoint != null && getDistance(player.getX(), player.getY(), points.get(nextPoint).x, points.get(nextPoint).y) < getDistance(player.getX(), player.getY(), points.get(currentPoint).x, points.get(currentPoint).y)){
+                    sendToTeam(new Message("help", nextPoint.toString(),"-" ));
+                    System.out.println("Need help on " + nextPoint);
+                }
+                else{
+                    sendToTeam(new Message("help", currentPoint.toString(),"-" ));
+                    System.out.println("Need help on " + currentPoint);
+                }
+
+                seeOpponent = true;
+            }
+
             // printMyPosition();
             // printPositionOthers();
             if (!actionOnSeenOpponent()) {
-                System.out.println("Stay");
+                //System.out.println("Stay");
                 return;
             }
-            System.out.println("Go");
+            //System.out.println("Go");
         } else {
-            player.setNeedHelp(false);
-            System.out.println("Doesn't need help");
-            if (checkNeedHelp() != -1) {
-                aimPoint = checkNeedHelp();
-                System.out.println("Helping to " + aimPoint);
-            }
+            seeOpponent = false;
+            //System.out.println("Doesn't need help");
         }
         if (aimPoint == null) {
             logicMovement();
@@ -231,6 +254,9 @@ public class ClientGui {
             aimPoint = null;
             return;
         }
+        if(nextPoint == -1){
+            return;
+        }
         if (currentPosition.equals(points.get(nextPoint))) {
             currentPoint = nextPoint;
             player.setCurrentPoint(currentPoint);
@@ -245,7 +271,7 @@ public class ClientGui {
         deltaX = deltaX == 0 ? 0 : deltaX / Math.abs(deltaX);
         deltaY = deltaY == 0 ? 0 : deltaY / Math.abs(deltaY);
         if (ifSeeOpponent()) {
-            player.move(player.getX() + deltaX, player.getY() + deltaY, angle);
+
         }
         else {
             player.move(player.getX() + deltaX, player.getY() + deltaY);
@@ -390,6 +416,7 @@ public class ClientGui {
         switch (player.getTeam()) {
             case CounterTerrorists:
                 currentPoint = 15;
+                aimPoint = 1;
                 break;
             case Terrorists:
                 currentPoint = 3;
@@ -416,7 +443,7 @@ public class ClientGui {
         Collection<Player> allPlayers = clientApplication.getPlayers();
         for (Player player1 : allPlayers) {
             if (!player1.equals(player)) {
-                System.out.println(player1.getX() + " " + player1.getY());
+                //System.out.println(player1.getX() + " " + player1.getY());
             }
         }
     }
@@ -462,39 +489,50 @@ public class ClientGui {
 
     public void respawn() {
         // add time check 5 seconds
-
+        Random random = new Random();
         if (player.getTeam() == Team.CounterTerrorists) {
 
-            player.move(95, 137);
-            currentPoint = 15;
-            player.setNextPoint(15);
+            currentPoint = 17+random.nextInt(3);
+            player.setNextPoint(currentPoint);
+            System.out.println("Respawned on " +(int) points.get(currentPoint).getX() + " " + (int) points.get(currentPoint).getY());
+            player.move((int) points.get(currentPoint).getX(), (int) points.get(currentPoint).getY());
+
             nextPoint = null;
             aimPoint = null;
+            sendToTeam(new Message("whereWeGo", null,"-" ));
         } else {
             player.move(67, 39);
-            currentPoint = 3;
-            player.setNextPoint(3);
+            currentPoint = 20+random.nextInt(3);
+
+            player.setNextPoint(currentPoint);
+            System.out.println("Respawned on " +(int) points.get(currentPoint).getX() + " " + (int) points.get(currentPoint).getY());
+            player.move((int) points.get(currentPoint).getX(), (int) points.get(currentPoint).getY());
             nextPoint = null;
             aimPoint = null;
         }
     }
 
-    public Integer checkNeedHelp() {
 
-        Collection<Player> allPlayers = clientApplication.getPlayers();
-        for (Player player1 : allPlayers) {
-            if (player.getTeam() == player1.getTeam()) {
-                if (player1.isNeedHelp()) {
-                    return player1.getNextPoint();
-                }
-            }
-        }
-
-        return -1;
-
-    }
 
     public void processTeamMessage(Message message) {
         System.out.println("Message from team: " + message.getMessage());
+        if (message.getType().equals("help")) {
+            aimPoint = Integer.parseInt(message.getMessage());
+
+            System.out.println("Go to help on" + points.get(aimPoint).x + " " + points.get(aimPoint).y + " from " + player.getX() + " " + player.getY());
+        }
+        if(message.getType().equals("hostage_aim")){
+            aimPoint = Integer.parseInt(message.getMessage());
+
+            System.out.println("Go to aim point on" + points.get(aimPoint).x + " " + points.get(aimPoint).y + " from " + player.getX() + " " + player.getY());
+        }
+        if(message.getType().equals("whereWeGo")){
+            sendToTeam(new Message("hostage_aim", aimPoint.toString(),"-" ));
+        }
+    }
+
+
+    public int getDistance(int x1, int y1, int x2, int y2){
+        return (int) Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2));
     }
 }
