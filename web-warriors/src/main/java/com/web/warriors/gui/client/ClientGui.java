@@ -139,6 +139,7 @@ public class ClientGui {
                 aimPoint = 15;
                 sendToTeam(new Message("hostage_aim", String.valueOf(aimPoint),"-" ));
                 System.out.println("Take hostage");
+
                 return;
             }
 
@@ -156,7 +157,7 @@ public class ClientGui {
 
             } else if (hostage != null) {
                 aimPoint = 15;
-                sendToTeam(new Message("hostage_aim", String.valueOf(aimPoint),"-" ));
+                sendToTeam(new Message("take_hostage", String.valueOf(aimPoint),"-" ));
             } else { // TODO fix unreached code
                 aimPoint = random.nextInt(15) + 1;
             }
@@ -191,6 +192,7 @@ public class ClientGui {
             // aimPoint = random.nextInt(15) + 1;
             // }
         }
+
     }
 
     private void sendToTeam(Message message) {
@@ -213,8 +215,9 @@ public class ClientGui {
         if (!player.isAlive()) {
             nextPoint = null;
             aimPoint = null;
-            if(player.getTeam() == Team.CounterTerrorists){
+            if(player.getTeam() == Team.CounterTerrorists && aimPoint == null){
                currentPoint = 17;
+               sendToTeam(new Message("whereWeGo", null,"-" ));
 
             }
             else{
@@ -234,11 +237,19 @@ public class ClientGui {
             shoot();
             //System.out.println("See opponent");
             if(seeOpponent == false){
-                if(nextPoint != null && getDistance(player.getX(), player.getY(), points.get(nextPoint).x, points.get(nextPoint).y) < getDistance(player.getX(), player.getY(), points.get(currentPoint).x, points.get(currentPoint).y)){
+//                if(nextPoint != null && getDistance(player.getX(), player.getY(), points.get(nextPoint).x, points.get(nextPoint).y) < getDistance(player.getX(), player.getY(), points.get(currentPoint).x, points.get(currentPoint).y)){
+//                    sendToTeam(new Message("help", nextPoint.toString(),"-" ));
+//                    System.out.println("Need help on " + nextPoint);
+//                }
+//                else{
+//                    sendToTeam(new Message("help", currentPoint.toString(),"-" ));
+//                    System.out.println("Need help on " + currentPoint);
+//                }
+                if(nextPoint != null&& player.getTeam() == Team.CounterTerrorists){
                     sendToTeam(new Message("help", nextPoint.toString(),"-" ));
                     System.out.println("Need help on " + nextPoint);
                 }
-                else{
+                else {
                     sendToTeam(new Message("help", currentPoint.toString(),"-" ));
                     System.out.println("Need help on " + currentPoint);
                 }
@@ -258,7 +269,12 @@ public class ClientGui {
             //System.out.println("Doesn't need help");
         }
         if (aimPoint == null) {
+            if(player.getTeam() == Team.CounterTerrorists){
+                sendToTeam(new Message("whereWeGo", null,"-" ));
+            }
             logicMovement();
+
+
         }
         if (nextPoint == null) {
             nextPoint = findShortestWay(graph, currentPoint, aimPoint, PointsNeighbors.size());
@@ -273,8 +289,8 @@ public class ClientGui {
             aimPoint = null;
             return;
         }
-        if(nextPoint == -1){
-            return;
+        if(nextPoint == -1 || (nextPoint == 15 && (currentPoint == 20 || currentPoint == 21 || currentPoint == 22 || currentPoint == 3))){
+            aimPoint = null;
         }
         if (currentPosition.equals(points.get(nextPoint))) {
             currentPoint = nextPoint;
@@ -335,9 +351,9 @@ public class ClientGui {
             currentNode = par.get(currentNode);
         }
 
-        if (path.size() < 2)
-            return 15;
-
+        if (path.size() < 2) {
+            return path.get(0);
+        }
         return path.get(path.size() - 2);
     }
 
@@ -411,9 +427,12 @@ public class ClientGui {
             case CounterTerrorists:
                 currentPoint = 15;
                 aimPoint = 1;
+                nextPoint = null;
                 break;
             case Terrorists:
                 currentPoint = 3;
+                aimPoint = null;
+                nextPoint = null;
                 break;
             default:
                 break;
@@ -511,7 +530,7 @@ public class ClientGui {
 
 
     public void processTeamMessage(Message message) {
-        System.out.println("Message from team: " + message.getMessage());
+        System.out.println("Message from team: " + message.getType());
         if (message.getType().equals("help")) {
             if (getHostage() == null){
             aimPoint = Integer.parseInt(message.getMessage());
@@ -519,6 +538,7 @@ public class ClientGui {
         }
             else {
                 System.out.println("Support denied. We have hostage!");
+                sendToTeam(new Message("take_hostage", "15","-" ));
             }
         }
         if(message.getType().equals("hostage_aim")){
@@ -528,11 +548,19 @@ public class ClientGui {
         }
             else {
                 System.out.println("Support denied. We have hostage!");
+                sendToTeam(new Message("take_hostage", "15","-" ));
 
             }
         }
+        if(message.getType().equals("take_hostage")){
+            System.out.println("Took hostage. All go to spawn");
+            aimPoint = 15;
+        }
         if(message.getType().equals("whereWeGo")){
-            sendToTeam(new Message("hostage_aim", aimPoint.toString(),"-" ));
+            if(aimPoint != null){
+                System.out.println("We aim to " + points.get(aimPoint).x + " " + points.get(aimPoint).y);
+                sendToTeam(new Message("hostage_aim", aimPoint.toString(),"-" ));
+            }
         }
     }
 
