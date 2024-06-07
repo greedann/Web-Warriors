@@ -328,6 +328,7 @@ public class GameEngine {
                     System.out.println("Player " + player.getId() + " was shot");
                     bullets.remove(bullet);
                     player.die();
+
                     break;
                 }
             }

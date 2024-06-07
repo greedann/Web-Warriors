@@ -70,12 +70,12 @@ public class Map extends JPanel {
         Hostage hostage = player.getHostage();
         if (hostage != null) {
             // TODO change hostage painting to a different method
-            g.setColor(Color.YELLOW);
+            g.setColor(Color.GREEN);
             int radius = cellSize / 2;
 
             int hostageCenterX = player.getX() * cellSize / 6 + radius;
             int hostageCenterY = player.getY() * cellSize / 6 + radius;
-            g.fillOval(hostageCenterX - radius, hostageCenterY - radius, cellSize, cellSize);
+            g.fillOval(hostageCenterX - radius, hostageCenterY - radius, cellSize/2, cellSize/2);
         }
     }
 
@@ -120,9 +120,9 @@ public class Map extends JPanel {
 
         for (Hostage hostage : hostages) {
             // draw circle
-            g.setColor(Color.YELLOW);
+            g.setColor(Color.GREEN);
 
-            int radius = cellSize / 2;
+            int radius = cellSize / 3;
 
             int centerX = hostage.getX() * cellSize / 6 + radius;
             int centerY = hostage.getY() * cellSize / 6 + radius;

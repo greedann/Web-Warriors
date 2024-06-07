@@ -38,6 +38,7 @@ public class ClientListener implements Runnable {
             System.err.println("Error reading UTF-8 data: " + e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
+            System.out.println("error" + message);
             // disconnect client from server
             server.removeClient(id);
         }

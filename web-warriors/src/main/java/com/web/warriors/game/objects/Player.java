@@ -220,6 +220,9 @@ public class Player implements Serializable {
         this.score += 50;
     }
 
+    public void alive(){
+        this.isAlive = true;
+    }
     public void die() {
         this.isAlive = false;
         Timer respawnTimer = new Timer();
@@ -229,12 +232,10 @@ public class Player implements Serializable {
                 isAlive = true;
                 if (team == Team.CounterTerrorists) {
                     move(95, 137);
-                    currentPoint = 15;
-                    nextPoint = 15;
+
                 } else {
                     move(67, 39);
-                    currentPoint = 3;
-                    nextPoint = 3;
+
                 }
             }
         };

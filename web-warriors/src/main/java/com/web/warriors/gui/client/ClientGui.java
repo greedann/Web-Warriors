@@ -210,9 +210,28 @@ public class ClientGui {
             player = clientApplication.getPlayer();
             return;
         }
+        if (!player.isAlive()) {
+            nextPoint = null;
+            aimPoint = null;
+            if(player.getTeam() == Team.CounterTerrorists){
+               currentPoint = 17;
+
+            }
+            else{
+                currentPoint = 20;
+            }
+
+            return;
+        }
+
+//        if(player.isAlive() && player.getTeam() == Team.CounterTerrorists && aimPoint == null){
+//            sendToTeam(new Message("whereWeGo", null,"-" ));
+//        }
 
         if (ifSeeOpponent()) {
             player.move(player.getX(), player.getY() , angle);
+
+            shoot();
             //System.out.println("See opponent");
             if(seeOpponent == false){
                 if(nextPoint != null && getDistance(player.getX(), player.getY(), points.get(nextPoint).x, points.get(nextPoint).y) < getDistance(player.getX(), player.getY(), points.get(currentPoint).x, points.get(currentPoint).y)){
@@ -270,43 +289,23 @@ public class ClientGui {
         deltaY = points.get(nextPoint).y - currentPosition.y;
         deltaX = deltaX == 0 ? 0 : deltaX / Math.abs(deltaX);
         deltaY = deltaY == 0 ? 0 : deltaY / Math.abs(deltaY);
-        if (ifSeeOpponent()) {
 
-        }
-        else {
-            player.move(player.getX() + deltaX, player.getY() + deltaY);
-        }
+        player.move(player.getX() + deltaX, player.getY() + deltaY);
     }
 
     static void bfs(List<List<Integer>> graph, int S,
             List<Integer> par, List<Integer> dist) {
-        // Queue to store the nodes in the order they are
-        // visited
         Queue<Integer> q = new LinkedList<>();
-        // Mark the distance of the source node as 0
         dist.set(S, 0);
-        // Push the source node to the queue
         q.add(S);
-
-        // Iterate until the queue is not empty
         while (!q.isEmpty()) {
-            // Pop the node at the front of the queue
             int node = q.poll();
-
-            // Explore all the neighbors of the current node
             for (int neighbor : graph.get(node)) {
-                // Check if the neighboring node is not
-                // visited
                 if (dist.get(neighbor) == Integer.MAX_VALUE) {
-                    // Mark the current node as the parent
-                    // of the neighboring node
+
                     par.set(neighbor, node);
-                    // Mark the distance of the neighboring
-                    // node as the distance of the current
-                    // node + 1
                     dist.set(neighbor, dist.get(node) + 1);
-                    // Insert the neighboring node to the
-                    // queue
+
                     q.add(neighbor);
                 }
             }
@@ -315,15 +314,10 @@ public class ClientGui {
 
     static Integer findShortestWay(List<List<Integer>> graph, int S,
             int D, int V) {
-        // par[] array stores the parent of nodes
         List<Integer> par = new ArrayList<>(Collections.nCopies(V, -1));
 
-        // dist[] array stores the distance of nodes from S
         List<Integer> dist = new ArrayList<>(
                 Collections.nCopies(V, Integer.MAX_VALUE));
-
-        // Function call to find the distance of all nodes
-        // and their parent nodes
         bfs(graph, S, par, dist);
 
         if (dist.get(D) == Integer.MAX_VALUE) {
@@ -332,7 +326,7 @@ public class ClientGui {
             return -1;
         }
 
-        // List path stores the shortest path
+
         List<Integer> path = new ArrayList<>();
         int currentNode = D;
         path.add(D);
@@ -429,13 +423,14 @@ public class ClientGui {
     public Boolean ifSeeOpponent() {
         Collection<Player> allPlayers = clientApplication.getPlayers();
         for (Player player1 : allPlayers) {
+            if(player1.isAlive() != false && player.isAlive() != false){
             if (player.getTeam() != player1.getTeam()) {
                 if (player1.getY() != -5) {
                     angle = Math.atan2(player.getX() - player1.getX(), player.getY() - player1.getY()) + (Math.PI / 2);
                     return true;
                 }
             }
-        }
+        }}
         return false;
     }
 
@@ -510,6 +505,7 @@ public class ClientGui {
             nextPoint = null;
             aimPoint = null;
         }
+        player.alive();
     }
 
 
@@ -517,14 +513,23 @@ public class ClientGui {
     public void processTeamMessage(Message message) {
         System.out.println("Message from team: " + message.getMessage());
         if (message.getType().equals("help")) {
+            if (getHostage() == null){
             aimPoint = Integer.parseInt(message.getMessage());
-
             System.out.println("Go to help on" + points.get(aimPoint).x + " " + points.get(aimPoint).y + " from " + player.getX() + " " + player.getY());
         }
+            else {
+                System.out.println("Support denied. We have hostage!");
+            }
+        }
         if(message.getType().equals("hostage_aim")){
+            if (getHostage() == null){
             aimPoint = Integer.parseInt(message.getMessage());
-
             System.out.println("Go to aim point on" + points.get(aimPoint).x + " " + points.get(aimPoint).y + " from " + player.getX() + " " + player.getY());
+        }
+            else {
+                System.out.println("Support denied. We have hostage!");
+
+            }
         }
         if(message.getType().equals("whereWeGo")){
             sendToTeam(new Message("hostage_aim", aimPoint.toString(),"-" ));
@@ -534,5 +539,13 @@ public class ClientGui {
 
     public int getDistance(int x1, int y1, int x2, int y2){
         return (int) Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2));
+    }
+
+    public void shoot() {
+        Random random = new Random()
+        ;
+        if (random.nextInt(1000) < 50) {
+            clientApplication.shoot(player);
+        }
     }
 }
