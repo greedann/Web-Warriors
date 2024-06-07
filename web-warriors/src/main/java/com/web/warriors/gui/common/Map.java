@@ -52,8 +52,8 @@ public class Map extends JPanel {
 
     private void paintPlayer(Graphics g, Player player, int size, Color color) {
         g.setColor(color);
-        int centerX = player.getX() * cellSize / 6 + size;
-        int centerY = player.getY() * cellSize / 6 + size;
+        int centerX = (player.getX() * cellSize / 6) + 5;
+        int centerY = (player.getY() * cellSize / 6) + 5;
 
         double angleRad = player.getAngle();
         int x1 = centerX + (int) ((size + 3) * Math.cos(angleRad));
@@ -75,7 +75,7 @@ public class Map extends JPanel {
 
             int hostageCenterX = player.getX() * cellSize / 6 + radius;
             int hostageCenterY = player.getY() * cellSize / 6 + radius;
-            g.fillOval(hostageCenterX - radius, hostageCenterY - radius, cellSize/2, cellSize/2);
+            g.fillOval(hostageCenterX - radius, hostageCenterY - radius, cellSize / 2, cellSize / 2);
         }
     }
 
@@ -96,8 +96,7 @@ public class Map extends JPanel {
                     default:
                         g.setColor(Color.GREEN);
                 }
-            }
-            else {
+            } else {
                 playerColor = Color.GRAY;
             }
             if (player != null && player == this.player) {

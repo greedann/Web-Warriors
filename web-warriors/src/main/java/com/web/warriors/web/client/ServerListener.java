@@ -26,10 +26,8 @@ public class ServerListener implements Runnable {
     public void run() {
         try {
             while (true) {
-                String message = objectIn.readObject().toString(); // TODO: fix crash here on close
-                // System.out.println("Server sent: " + message);
-
                 try {
+                    String message = objectIn.readObject().toString();
                     Map<String, Object> data = mapper.readValue(message, new TypeReference<Map<String, Object>>() {
                     });
                     String type = (String) data.get("type");
@@ -91,6 +89,9 @@ public class ServerListener implements Runnable {
                     e.printStackTrace();
                 } catch (JsonProcessingException e) {
                     e.printStackTrace();
+                } catch (java.io.StreamCorruptedException e) {
+                    System.out.println("StreamCorruptedException");
+                    System.err.println("Error reading data: " + e.getMessage());
                 }
             }
         } catch (java.net.SocketException e) {

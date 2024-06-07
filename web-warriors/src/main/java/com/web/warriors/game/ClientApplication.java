@@ -151,7 +151,7 @@ public class ClientApplication {
 
     public void shoot(Player player) {
         Double angle = player.getAngle() + (Math.random() * 0.1 - 0.05);
-        Bullet bullet = new Bullet(player.getX() + 4, player.getY() + 2, angle, player.getTeam());
+        Bullet bullet = new Bullet(player.getX(), player.getY(), angle, player.getTeam());
         gameEngine.addBullet(bullet);
         Map<String, Object> data = new HashMap<>();
         data.put("type", "shoot");

@@ -36,6 +36,9 @@ public class ClientListener implements Runnable {
         } catch (UTFDataFormatException e) {
             System.out.println("UTFDataFormatException");
             System.err.println("Error reading UTF-8 data: " + e.getMessage());
+        } catch (java.io.OptionalDataException e) {
+            System.out.println("OptionalDataException");
+            System.err.println("Error reading OptionalData: " + e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("error" + message);
@@ -57,12 +60,14 @@ public class ClientListener implements Runnable {
             else
                 return false;
 
+        } catch (com.fasterxml.jackson.core.JsonParseException e) {
+            System.out.println("JsonParseException");
+            System.err.println("Error reading data: " + e.getMessage());
         } catch (JsonMappingException e) {
             e.printStackTrace();
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
-
         return false;
     }
 }

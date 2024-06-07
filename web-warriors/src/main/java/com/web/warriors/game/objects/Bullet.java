@@ -87,7 +87,7 @@ public class Bullet {
 
     @JsonIgnore
     public boolean isColliding(Player player) {
-        return Math.abs(player.getX() - x) < 2 && Math.abs(player.getY() - y) < 4;
+        return Math.abs(player.getX() - x) < 3 && Math.abs(player.getY() - y) < 3;
     }
 
     @JsonIgnore
